@@ -8,6 +8,7 @@ export * from './charts/polar';
 export * from './charts/radar';
 export * from './charts/scatter';
 export * from './charts/bubble';
+export * from './charts/grouped-bar';
 
 import { wguPlugins } from './plugins';
 

@@ -1,11 +1,12 @@
 import {
   barChart, lineChart, doughnutChart, pieChart, comboChart,
-  polarChart, radarChart, scatterChart, bubbleChart, registerWguPlugins
+  polarChart, radarChart, scatterChart, bubbleChart, groupedBarChart,
+  registerWguPlugins
 } from '../../src/index';
 
 export type ChartType =
   | 'bar' | 'line' | 'doughnut' | 'pie' | 'combo'
-  | 'polarArea' | 'radar' | 'scatter' | 'bubble';
+  | 'polarArea' | 'radar' | 'scatter' | 'bubble' | 'groupedBar';
 
 export interface MountSpec { type: ChartType; data: any; labels?: string[]; opts?: any; }
 export interface ChartHandle { chart: any; update: (data: any, labels?: string[]) => void; destroy: () => void; }
@@ -21,6 +22,7 @@ function buildConfig(spec: MountSpec): any {
     case 'radar': return radarChart(spec.labels || [], spec.data);
     case 'scatter': return scatterChart(spec.data);
     case 'bubble': return bubbleChart(spec.data);
+    case 'groupedBar': return groupedBarChart(spec.labels || [], spec.data, spec.opts);
     default: throw new Error('WGUCharts: unknown chart type "' + (spec as any).type + '"');
   }
 }
