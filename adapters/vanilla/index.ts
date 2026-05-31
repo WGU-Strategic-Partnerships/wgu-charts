@@ -32,7 +32,7 @@ const RENDER_MODELS: Record<string, { build: (d: any, o?: any) => any; render: (
   scoreTable: { build: scoreTableModel, render: renderScoreTable, css: scoreTableCss, styleId: scoreTableStyleId }
 };
 
-function buildConfig(spec: MountSpec): any {
+export function buildConfig(spec: MountSpec): any {
   switch (spec.type) {
     case 'bar': return barChart(spec.data, spec.opts);
     case 'line': return lineChart(spec.labels || [], spec.data, spec.opts);

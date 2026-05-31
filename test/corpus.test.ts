@@ -12,3 +12,12 @@ it('has metadata for every family, in taxonomy order', () => {
   expect(FAMILIES.map(f => f.id)).toEqual([...FAMILIES_ORDER]);
   FAMILIES.forEach(f => { expect(f.label.length).toBeGreaterThan(0); expect(f.description.length).toBeGreaterThan(0); });
 });
+
+import { resolveSpec } from '../src/corpus/resolveSpec';
+describe('resolveSpec', () => {
+  it('resolves a chartjs bar spec', () => { const r = resolveSpec({ engine:'chartjs', type:'bar', data:[{label:'A',count:5}] }); expect(r.kind).toBe('chartjs'); expect((r.value as any).type).toBe('bar'); });
+  it('resolves a render-model gauge spec', () => { const r = resolveSpec({ engine:'render-model', type:'gauge', data:{ label:'x', percent:50 } }); expect(r.kind).toBe('render-model'); expect(r.value).toBeTruthy(); });
+  it('resolves an echarts factory spec', () => { const r = resolveSpec({ engine:'echarts', factory:'sankeyOption', args:[[{name:'A'},{name:'B'}],[{source:'A',target:'B',value:5}]] }); expect(r.kind).toBe('echarts'); expect((r.value as any).series[0].type).toBe('sankey'); });
+  it('throws on unknown echarts factory', () => { expect(() => resolveSpec({ engine:'echarts', factory:'nopeOption', args:[] })).toThrow(/unknown/i); });
+  it('throws on unknown render-model type', () => { expect(() => resolveSpec({ engine:'render-model', type:'nope', data:{} })).toThrow(/unknown/i); });
+});
