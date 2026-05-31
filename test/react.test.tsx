@@ -29,8 +29,17 @@ describe('<WguChart>', () => {
     const { unmount } = render(<WguChart type="bar" data={[]} />);
     unmount(); expect(handle.destroy).toHaveBeenCalledTimes(1);
   });
-  it('forwards onClick to the mount spec', () => {
-    render(<WguChart type="bar" data={[]} onClick={() => {}} />);
-    expect(typeof mount.mock.calls[0][1].onClick).toBe('function');
+  it('routes onClick through the current callback ref', () => {
+    const cb = vi.fn();
+    render(<WguChart type="bar" data={[]} onClick={cb} />);
+    const spec = mount.mock.calls[0][1];
+    const fakeHit = { datasetIndex: 0, index: 0, label: 'A', value: 5, datum: 5 };
+    spec.onClick(fakeHit);
+    expect(cb).toHaveBeenCalledWith(fakeHit);
+  });
+  it('changing onClick identity does NOT remount', () => {
+    const { rerender } = render(<WguChart type="bar" data={[]} onClick={() => {}} />);
+    rerender(<WguChart type="bar" data={[]} onClick={() => {}} />);
+    expect(mount).toHaveBeenCalledTimes(1);
   });
 });

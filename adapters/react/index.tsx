@@ -24,6 +24,8 @@ export function WguChart(props: WguChartProps) {
   const cbRef = useRef({ onClick, onDrill });
   cbRef.current = { onClick, onDrill };
 
+  // Remount when type or opts change. opts is compared by JSON.stringify (deep-ish): note that
+  // function-valued opts (e.g. custom formatters) won't be diffed — change `type` or remount manually if needed.
   useEffect(() => {
     if (!elRef.current) return;
     handleRef.current = getApi().mount(elRef.current, {
