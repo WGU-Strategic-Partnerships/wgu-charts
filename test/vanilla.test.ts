@@ -45,4 +45,20 @@ describe('vanilla adapter', () => {
     const WGUCharts = createWGUCharts(FakeChart as any);
     expect(() => WGUCharts.mount({} as any, { type: 'nope' as any, data: [] })).toThrow(/unknown chart type/i);
   });
+  it('mounts a render-model (gauge) by injecting HTML into the element', () => {
+    const WGUCharts = createWGUCharts(FakeChart as any);
+    const el = document.createElement('div');
+    const h = WGUCharts.mount(el, { type: 'gauge', data: { label: 'Conv', percent: 90 } });
+    expect(h.chart).toBeNull();
+    expect(el.innerHTML).toContain('Conv');
+    expect(el.innerHTML).toContain('pp-gauge');
+    h.destroy();
+    expect(el.innerHTML).toBe('');
+  });
+  it('injects render-model CSS once into the document head', () => {
+    const WGUCharts = createWGUCharts(FakeChart as any);
+    WGUCharts.mount(document.createElement('div'), { type: 'funnel', data: [{ label: 'A', value: 5 }] });
+    WGUCharts.mount(document.createElement('div'), { type: 'funnel', data: [{ label: 'B', value: 3 }] });
+    expect(document.querySelectorAll('#wgu-funnel').length).toBe(1);
+  });
 });

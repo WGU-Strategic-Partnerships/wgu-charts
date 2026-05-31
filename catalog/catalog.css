@@ -12,3 +12,4 @@ body[data-mode="dark"] .card { background:#0a3a66; }
 .card h3 { margin:0 0 4px; font-size:16px; }
 .card .spec { font-family:ui-monospace,Menlo,monospace; font-size:12px; opacity:.7; margin:0 0 12px; }
 .card .canvas-wrap { position:relative; height:260px; }
+.rm-mount { min-height:260px; }
