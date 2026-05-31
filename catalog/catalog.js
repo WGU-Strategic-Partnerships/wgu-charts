@@ -1,3 +1,70 @@
+// ── Interactive demo card ────────────────────────────────────────────────────
+const IROWS = [
+  {label:'MBA',     count:120, region:'West'},
+  {label:'BSN',     count:90,  region:'East'},
+  {label:'IT',      count:70,  region:'West'},
+  {label:'Edu',     count:55,  region:'East'},
+  {label:'Business',count:48,  region:'Central'},
+  {label:'Health',  count:62,  region:'Central'}
+];
+const toBar = (rows) => rows.map(r => ({ label: r.label, count: r.count }));
+
+(function buildInteractiveCard() {
+  const grid = document.getElementById('grid');
+
+  // Build card element
+  const card = document.createElement('div');
+  card.className = 'card card--wide';
+
+  // Region filter options from deriveFilterOptions
+  const regionOpts = WGUCharts.deriveFilterOptions(IROWS, 'region');
+  const optionsHTML = [{ value: 'all', label: 'All regions' }, ...regionOpts]
+    .map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+
+  card.innerHTML = `
+    <h3>Interactive — filter · click · live</h3>
+    <div class="icontrols">
+      <select id="iRegionSel">${optionsHTML}</select>
+      <button id="iRandBtn">Randomize</button>
+    </div>
+    <div class="canvas-wrap"><canvas id="ic"></canvas></div>
+    <p class="istatus">Click a bar…</p>
+  `;
+
+  grid.appendChild(card);
+
+  // Mount chart with onClick callback
+  const ih = WGUCharts.mount('#ic', {
+    type: 'bar',
+    data: toBar(IROWS),
+    onClick: (hit) => {
+      document.querySelector('.istatus').textContent =
+        `Clicked: ${hit.label} — ${hit.value}`;
+    }
+  });
+
+  // Filter handler
+  const sel = document.getElementById('iRegionSel');
+  sel.addEventListener('change', () => {
+    const v = sel.value;
+    const rows = v === 'all' ? IROWS : WGUCharts.applyFilters(IROWS, { region: [v] });
+    ih.update(toBar(rows));
+    document.querySelector('.istatus').textContent =
+      v === 'all' ? 'Showing all regions' : `Filtered: ${v}`;
+  });
+
+  // Randomize / live-update handler
+  const btn = document.getElementById('iRandBtn');
+  btn.addEventListener('click', () => {
+    ih.update(IROWS.map(r => ({
+      label: r.label,
+      count: Math.max(5, Math.round(r.count * (0.5 + Math.random())))
+    })));
+    document.querySelector('.istatus').textContent = 'Randomized (live update)';
+  });
+})();
+// ── Sample gallery ───────────────────────────────────────────────────────────
+
 const SAMPLES = [
   { type:'bar', title:'Bar (horizontal)', data:[{label:'MBA',count:120},{label:'BSN',count:80},{label:'IT',count:60}],
     src:"WGUCharts.mount(el,{type:'bar',data:[{label,count}]})" },

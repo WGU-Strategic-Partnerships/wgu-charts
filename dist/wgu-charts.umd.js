@@ -22,6 +22,8 @@ var WGUCharts = (() => {
   // adapters/vanilla/umd-entry.ts
   var umd_entry_exports = {};
   __export(umd_entry_exports, {
+    applyData: () => applyData,
+    applyFilters: () => applyFilters,
     barChart: () => barChart,
     boxplotChart: () => boxplotChart,
     bubbleChart: () => bubbleChart,
@@ -29,12 +31,15 @@ var WGUCharts = (() => {
     comboChart: () => comboChart,
     createTheme: () => createTheme,
     createWGUCharts: () => createWGUCharts,
+    deriveFilterOptions: () => deriveFilterOptions,
     doughnutChart: () => doughnutChart,
+    drillSpec: () => drillSpec,
     errorBarChart: () => errorBarChart,
     forceGraphChart: () => forceGraphChart,
     geoBubbleChart: () => geoBubbleChart,
     groupedBarChart: () => groupedBarChart,
     heatmapChart: () => heatmapChart,
+    hitTest: () => hitTest,
     lineChart: () => lineChart,
     mount: () => mount,
     pBarLabels: () => pBarLabels,
@@ -52,6 +57,53 @@ var WGUCharts = (() => {
     wguTheme: () => wguTheme,
     wordCloudChart: () => wordCloudChart
   });
+
+  // src/interaction/index.ts
+  function hitTest(chart, evt) {
+    if (!chart || typeof chart.getElementsAtEventForMode !== "function") return null;
+    const els = chart.getElementsAtEventForMode(evt, "nearest", { intersect: true }, false);
+    if (!els || !els.length) return null;
+    const { datasetIndex, index } = els[0];
+    const ds = chart.data?.datasets?.[datasetIndex];
+    const datum = ds?.data ? ds.data[index] : void 0;
+    const label = chart.data?.labels ? chart.data.labels[index] : void 0;
+    const value = datum && typeof datum === "object" ? datum.y ?? datum.v ?? datum.value ?? datum : datum;
+    return { datasetIndex, index, label, value, datum };
+  }
+  function applyFilters(rows, state) {
+    const src = Array.isArray(rows) ? rows : [];
+    const dims = Object.keys(state || {}).filter((d) => Array.isArray(state[d]) && state[d].length);
+    if (!dims.length) return [...src];
+    return src.filter((r) => dims.every((d) => state[d].includes(r[d])));
+  }
+  function deriveFilterOptions(rows, dim) {
+    const seen = /* @__PURE__ */ new Set();
+    const out = [];
+    (Array.isArray(rows) ? rows : []).forEach((r) => {
+      const v = r[dim];
+      if (!seen.has(v)) {
+        seen.add(v);
+        out.push({ value: v, label: String(v) });
+      }
+    });
+    return out;
+  }
+  function drillSpec(spec) {
+    const levels = spec && Array.isArray(spec.levels) ? spec.levels : [];
+    const clamp = (i) => Math.max(0, Math.min(levels.length - 1, i));
+    return {
+      levels,
+      levelAt: (i) => levels[clamp(i)],
+      next: (i) => i < levels.length - 1 ? i + 1 : i,
+      prev: (i) => i > 0 ? i - 1 : 0
+    };
+  }
+  function applyData(chart, next) {
+    if (!chart) return;
+    if (next.labels !== void 0) chart.data.labels = next.labels;
+    chart.data.datasets = next.datasets;
+    chart.update();
+  }
 
   // src/theme/index.ts
   var wguTheme = {
@@ -1825,17 +1877,26 @@ var WGUCharts = (() => {
         }
         const config = buildConfig(spec);
         const chart = new Chart2(el, config);
+        let onClickListener;
+        if ((spec.onClick || spec.onDrill) && chart.canvas) {
+          onClickListener = (e) => {
+            const hit = hitTest(chart, e);
+            if (!hit) return;
+            if (spec.onClick) spec.onClick(hit);
+            if (spec.onDrill) spec.onDrill(hit);
+          };
+          chart.canvas.addEventListener("click", onClickListener);
+        }
         return {
           chart,
           // NOTE: combo charts expect data = { bar: ComboSeries, line: ComboSeries }.
           // Calling update() with a flat array for a combo chart will throw. Combo live-update is Plan 2.
           update(data, labels) {
             const next = buildConfig({ ...spec, data, labels: labels ?? spec.labels });
-            chart.data.labels = next.data.labels;
-            chart.data.datasets = next.data.datasets;
-            chart.update();
+            applyData(chart, { labels: next.data.labels, datasets: next.data.datasets });
           },
           destroy() {
+            if (onClickListener && chart.canvas) chart.canvas.removeEventListener("click", onClickListener);
             chart.destroy();
           }
         };

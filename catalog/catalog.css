@@ -13,3 +13,8 @@ body[data-mode="dark"] .card { background:#0a3a66; }
 .card .spec { font-family:ui-monospace,Menlo,monospace; font-size:12px; opacity:.7; margin:0 0 12px; }
 .card .canvas-wrap { position:relative; height:260px; }
 .rm-mount { min-height:260px; }
+.card--wide { grid-column:1/-1; }
+.icontrols { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+.icontrols select, .icontrols button { font-family:inherit; border:1px solid #cdd7e3; border-radius:6px; padding:6px 10px; background:#fff; cursor:pointer; }
+.icontrols button { background:#0070F0; color:#fff; border:0; }
+.istatus { margin:10px 0 0; font:13px ui-monospace,Menlo,monospace; color:#264468; }
