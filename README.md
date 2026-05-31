@@ -33,4 +33,4 @@ Copy `dist/wgu-charts.umd.js` into a static resource alongside `ChartJs`; load b
 
 ## Roadmap
 Render-models (funnel/gauge/KPI/choropleth): Plan 1b · Interactivity: Plan 2 · React: Plan 3 ·
-Community plugins: Plan 4 · LWC + PartnerPath migration: Plan 5.
+Community plugins (heatmap/treemap/sankey/boxplot/error-bars/wordcloud/candlestick/geo/graph): Plan 4 ✅ · LWC + PartnerPath migration: Plan 5.

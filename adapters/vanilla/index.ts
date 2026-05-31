@@ -1,6 +1,8 @@
 import {
   barChart, lineChart, doughnutChart, pieChart, comboChart,
   polarChart, radarChart, scatterChart, bubbleChart, groupedBarChart,
+  heatmapChart, treemapChart, sankeyChart, boxplotChart, errorBarChart,
+  wordCloudChart, candlestickChart, geoBubbleChart, forceGraphChart,
   registerWguPlugins
 } from '../../src/index';
 import { isRenderModelType, ensureStyle } from '../../src/render/runtime';
@@ -13,7 +15,9 @@ import { scoreTableModel, renderScoreTable, scoreTableCss, scoreTableStyleId } f
 export type ChartType =
   | 'bar' | 'line' | 'doughnut' | 'pie' | 'combo'
   | 'polarArea' | 'radar' | 'scatter' | 'bubble' | 'groupedBar'
-  | 'funnel' | 'gauge' | 'kpi' | 'choropleth' | 'scoreTable';
+  | 'funnel' | 'gauge' | 'kpi' | 'choropleth' | 'scoreTable'
+  | 'matrix' | 'treemap' | 'sankey' | 'boxplot' | 'barWithErrorBars'
+  | 'wordCloud' | 'candlestick' | 'bubbleMap' | 'forceDirectedGraph';
 
 export interface MountSpec { type: ChartType; data: any; labels?: string[]; opts?: any; }
 export interface ChartHandle { chart: any; update: (data: any, labels?: string[]) => void; destroy: () => void; }
@@ -38,6 +42,16 @@ function buildConfig(spec: MountSpec): any {
     case 'scatter': return scatterChart(spec.data);
     case 'bubble': return bubbleChart(spec.data);
     case 'groupedBar': return groupedBarChart(spec.labels || [], spec.data, spec.opts);
+    // Community plugin types (plugin UMDs must be loaded before the adapter is used)
+    case 'matrix': return heatmapChart(spec.data, spec.opts);
+    case 'treemap': return treemapChart(spec.data, spec.opts);
+    case 'sankey': return sankeyChart(spec.data, spec.opts);
+    case 'boxplot': return boxplotChart(spec.labels || [], spec.data, spec.opts);
+    case 'barWithErrorBars': return errorBarChart(spec.labels || [], spec.data, spec.opts);
+    case 'wordCloud': return wordCloudChart(spec.data, spec.opts);
+    case 'candlestick': return candlestickChart(spec.data, spec.opts);
+    case 'bubbleMap': return geoBubbleChart(spec.data);
+    case 'forceDirectedGraph': return forceGraphChart(spec.data);
     default: throw new Error('WGUCharts: unknown chart type "' + (spec as any).type + '"');
   }
 }

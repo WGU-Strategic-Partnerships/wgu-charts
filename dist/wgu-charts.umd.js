@@ -23,12 +23,18 @@ var WGUCharts = (() => {
   var umd_entry_exports = {};
   __export(umd_entry_exports, {
     barChart: () => barChart,
+    boxplotChart: () => boxplotChart,
     bubbleChart: () => bubbleChart,
+    candlestickChart: () => candlestickChart,
     comboChart: () => comboChart,
     createTheme: () => createTheme,
     createWGUCharts: () => createWGUCharts,
     doughnutChart: () => doughnutChart,
+    errorBarChart: () => errorBarChart,
+    forceGraphChart: () => forceGraphChart,
+    geoBubbleChart: () => geoBubbleChart,
     groupedBarChart: () => groupedBarChart,
+    heatmapChart: () => heatmapChart,
     lineChart: () => lineChart,
     mount: () => mount,
     pBarLabels: () => pBarLabels,
@@ -37,10 +43,14 @@ var WGUCharts = (() => {
     pieChart: () => pieChart,
     polarChart: () => polarChart,
     radarChart: () => radarChart,
+    registerPlugin: () => registerPlugin,
     registerWguPlugins: () => registerWguPlugins,
+    sankeyChart: () => sankeyChart,
     scatterChart: () => scatterChart,
+    treemapChart: () => treemapChart,
     wguPlugins: () => wguPlugins,
-    wguTheme: () => wguTheme
+    wguTheme: () => wguTheme,
+    wordCloudChart: () => wordCloudChart
   });
 
   // src/theme/index.ts
@@ -545,6 +555,361 @@ var WGUCharts = (() => {
     };
   }
 
+  // src/charts/community/heatmap.ts
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+  function heat(t) {
+    t = Math.max(0, Math.min(1, t));
+    const cs = [[200, 224, 245], [70, 177, 239], [0, 112, 240], [3, 40, 100]];
+    const seg = t * (cs.length - 1);
+    const i = Math.min(Math.floor(seg), cs.length - 2);
+    const f = seg - i;
+    const c = cs[i];
+    const d = cs[i + 1];
+    return "rgb(" + Math.round(lerp(c[0], d[0], f)) + "," + Math.round(lerp(c[1], d[1], f)) + "," + Math.round(lerp(c[2], d[2], f)) + ")";
+  }
+  function heatmapChart(data, opts) {
+    const cloned = cloneArr(data);
+    const rawMax = data.length ? Math.max(...data.map((d) => d.v)) : 0;
+    const max = (opts?.max != null ? opts.max : rawMax) || 1;
+    const xLabels = opts?.xLabels;
+    const yLabels = opts?.yLabels;
+    const fg2 = wguTheme.colors.fg2;
+    return {
+      type: "matrix",
+      data: {
+        datasets: [{
+          label: opts?.label || "",
+          data: cloned,
+          backgroundColor: (ctx) => heat((ctx.raw ? ctx.raw.v : 0) / max),
+          borderColor: "#fff",
+          borderWidth: 1,
+          width: (ctx) => {
+            const chart = ctx.chart;
+            return (chart.chartArea?.width || 0) / (xLabels?.length || 1) - 2;
+          },
+          height: (ctx) => {
+            const chart = ctx.chart;
+            return (chart.chartArea?.height || 0) / (yLabels?.length || 1) - 2;
+          }
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            ...baseTooltip(),
+            callbacks: {
+              title: () => "",
+              label: (c) => ` ${c.raw?.x}, ${c.raw?.y}, ${c.raw?.v}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: "category",
+            labels: xLabels,
+            grid: { display: false },
+            ticks: { color: fg2 }
+          },
+          y: {
+            type: "category",
+            labels: yLabels,
+            grid: { display: false },
+            ticks: { color: fg2 }
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/treemap.ts
+  function treemapChart(data, opts) {
+    const seq = wguTheme.colors.sequence;
+    return {
+      type: "treemap",
+      data: {
+        datasets: [{
+          label: opts?.label || "",
+          tree: cloneArr(data),
+          key: "value",
+          backgroundColor: (ctx) => seq[(ctx.dataIndex ?? 0) % seq.length],
+          spacing: 1,
+          borderWidth: 0,
+          labels: {
+            display: true,
+            color: "#fff",
+            font: { weight: "600" }
+          }
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            ...baseTooltip(),
+            callbacks: {
+              title: (items) => items[0]?.raw?._data?.label ?? "",
+              label: (c) => " " + (c.raw?.v ?? c.raw?._data?.value ?? "")
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/sankey.ts
+  function sankeyChart(data, opts) {
+    const { navy, medium } = wguTheme.colors;
+    return {
+      type: "sankey",
+      data: {
+        datasets: [{
+          label: opts?.label || "",
+          data: cloneArr(data),
+          colorFrom: navy,
+          colorTo: medium,
+          colorMode: "gradient",
+          labels: opts?.labels,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        }
+      }
+    };
+  }
+
+  // src/charts/community/boxplot.ts
+  function boxplotChart(labels, data, opts) {
+    return {
+      type: "boxplot",
+      data: {
+        labels: cloneArr(labels),
+        datasets: [{
+          label: opts?.label || "",
+          data: data.map(cloneArr),
+          backgroundColor: "#0070F066",
+          borderColor: "#002855",
+          borderWidth: 1.5,
+          itemRadius: 2,
+          outlierBackgroundColor: "#002855"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        },
+        animation: baseAnimation(),
+        scales: {
+          x: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: { color: wguTheme.colors.fg2 }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: wguTheme.colors.grid },
+            border: { display: false },
+            ticks: { color: tickColor }
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/error-bars.ts
+  function errorBarChart(labels, data, opts) {
+    return {
+      type: "barWithErrorBars",
+      data: {
+        labels: cloneArr(labels),
+        datasets: [{
+          label: opts?.label || "",
+          data: cloneArr(data),
+          backgroundColor: "#0070F0",
+          borderRadius: wguTheme.radius,
+          borderSkipped: false,
+          errorBarColor: "#002855",
+          errorBarWhiskerColor: "#002855",
+          errorBarLineWidth: 1.5,
+          errorBarWhiskerLineWidth: 1.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        },
+        animation: baseAnimation(),
+        scales: {
+          x: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: { color: wguTheme.colors.fg2 }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: wguTheme.colors.grid },
+            border: { display: false },
+            ticks: { color: tickColor }
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/word-cloud.ts
+  function wordCloudChart(words, opts) {
+    const seq = wguTheme.colors.sequence;
+    return {
+      type: "wordCloud",
+      data: {
+        labels: words.map((w) => w.text),
+        datasets: [{
+          label: opts?.label || "",
+          data: words.map((w) => Number(w.weight) || 0),
+          color: words.map((_w, i) => seq[i % seq.length])
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/candlestick.ts
+  function candlestickChart(data, opts) {
+    return {
+      type: "candlestick",
+      data: {
+        datasets: [{
+          label: opts?.label || "",
+          data: cloneArr(data),
+          color: {
+            up: "#97E152",
+            down: "#E5484D",
+            unchanged: "#46B1EF"
+          },
+          borderColor: {
+            up: "#97E152",
+            down: "#E5484D",
+            unchanged: "#46B1EF"
+          }
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        parsing: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        },
+        scales: {
+          x: {
+            type: "category",
+            grid: { display: false },
+            border: { display: false },
+            ticks: { color: wguTheme.colors.fg2 }
+          },
+          y: {
+            grid: { color: wguTheme.colors.grid },
+            border: { display: false },
+            ticks: { color: tickColor }
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/geo-bubble.ts
+  function geoBubbleChart(opts) {
+    const points = opts.points || [];
+    return {
+      type: "bubbleMap",
+      data: {
+        labels: points.map((p) => p.name),
+        datasets: [{
+          label: opts.label || "",
+          outline: opts.outline,
+          data: cloneArr(points),
+          backgroundColor: "#0070F0aa",
+          borderColor: "#002855",
+          borderWidth: 0.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        showOutline: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        },
+        scales: {
+          projection: {
+            axis: "x",
+            projection: "albersUsa"
+          }
+        }
+      }
+    };
+  }
+
+  // src/charts/community/force-graph.ts
+  function forceGraphChart(opts) {
+    const nodes = opts.nodes || [];
+    const edges = opts.edges || [];
+    return {
+      type: "forceDirectedGraph",
+      data: {
+        labels: nodes.map((n) => n.id),
+        datasets: [{
+          label: opts.label || "",
+          data: nodes.map(() => ({})),
+          edges: cloneArr(edges),
+          pointBackgroundColor: "#0070F0",
+          pointRadius: 6,
+          edgeLineBorderColor: "#264468"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: baseTooltip()
+        }
+      }
+    };
+  }
+
+  // src/charts/community/index.ts
+  function registerPlugin(Chart2, ...controllers) {
+    if (Chart2 && typeof Chart2.register === "function") Chart2.register(...controllers);
+  }
+
   // src/index.ts
   var registered = false;
   function registerWguPlugins(Chart2) {
@@ -1032,7 +1397,7 @@ var WGUCharts = (() => {
     WI: "Wisconsin",
     WY: "Wyoming"
   };
-  function lerp(a, b, t) {
+  function lerp2(a, b, t) {
     return a + (b - a) * t;
   }
   function heatColor(t) {
@@ -1043,7 +1408,7 @@ var WGUCharts = (() => {
     const f = seg - i;
     const c = cs[i];
     const d = cs[i + 1];
-    return "rgb(" + Math.round(lerp(c[0], d[0], f)) + "," + Math.round(lerp(c[1], d[1], f)) + "," + Math.round(lerp(c[2], d[2], f)) + ")";
+    return "rgb(" + Math.round(lerp2(c[0], d[0], f)) + "," + Math.round(lerp2(c[1], d[1], f)) + "," + Math.round(lerp2(c[2], d[2], f)) + ")";
   }
   var EMPTY_FILL = "#E7EEF5";
   var paths = us_states_default.paths;
@@ -1416,6 +1781,25 @@ var WGUCharts = (() => {
         return bubbleChart(spec.data);
       case "groupedBar":
         return groupedBarChart(spec.labels || [], spec.data, spec.opts);
+      // Community plugin types (plugin UMDs must be loaded before the adapter is used)
+      case "matrix":
+        return heatmapChart(spec.data, spec.opts);
+      case "treemap":
+        return treemapChart(spec.data, spec.opts);
+      case "sankey":
+        return sankeyChart(spec.data, spec.opts);
+      case "boxplot":
+        return boxplotChart(spec.labels || [], spec.data, spec.opts);
+      case "barWithErrorBars":
+        return errorBarChart(spec.labels || [], spec.data, spec.opts);
+      case "wordCloud":
+        return wordCloudChart(spec.data, spec.opts);
+      case "candlestick":
+        return candlestickChart(spec.data, spec.opts);
+      case "bubbleMap":
+        return geoBubbleChart(spec.data);
+      case "forceDirectedGraph":
+        return forceGraphChart(spec.data);
       default:
         throw new Error('WGUCharts: unknown chart type "' + spec.type + '"');
     }
