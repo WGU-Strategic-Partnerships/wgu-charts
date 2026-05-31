@@ -390,6 +390,230 @@ export const magnitude: CorpusEntry[] = [
   },
 
   {
+    id: 'magnitude-bar-stacked-100-echarts',
+    title: 'Stacked 100% bar (ECharts)',
+    family: 'magnitude',
+    secondaryFamilies: ['part-to-whole'],
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'stacked-100',
+    whenToUse: 'Compare proportional composition across categories in ECharts when percentage share matters more than absolute count and you need richer tooltip formatting.',
+    description: 'Multi-series bar with stack:\'total\' and a percentage-formatter label; each column sums to 100 by design, making cross-category share shifts legible.',
+    tags: ['categorical', 'multi-series', 'stacked', 'percent', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['stacked', 'percent', 'multi-series'],
+    sampleData: {
+      labels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      series: [
+        { label: 'On Track', data: [60, 55, 70, 65] },
+        { label: 'At Risk', data: [25, 30, 20, 22] },
+        { label: 'Off Track', data: [15, 15, 10, 13] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'barOption',
+      args: [
+        ['Business', 'Technology', 'Education', 'Healthcare'],
+        [
+          { label: 'On Track', data: [60, 55, 70, 65] },
+          { label: 'At Risk', data: [25, 30, 20, 22] },
+          { label: 'Off Track', data: [15, 15, 10, 13] },
+        ],
+        { stacked: true },
+      ],
+    },
+  },
+
+  {
+    id: 'magnitude-bar-horizontal-echarts',
+    title: 'Horizontal bar (ECharts)',
+    family: 'magnitude',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'horizontal',
+    whenToUse: 'Show a single-series categorical comparison with long labels using the ECharts engine; horizontal orientation prevents label truncation and ECharts provides smooth axis animation.',
+    description: 'Single-series horizontal bar using barOption with horizontal:true; labels run along the y-axis, values extend rightward. WGU-themed with rounded bar ends.',
+    tags: ['categorical', 'single-series', 'horizontal', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['value-labels'],
+    sampleData: {
+      labels: ['Computer Science', 'Business Administration', 'Registered Nursing', 'Teaching / Education', 'Cybersecurity'],
+      series: [{ label: 'Enrollments', data: [5420, 4810, 4150, 3380, 2960] }],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'barOption',
+      args: [
+        ['Computer Science', 'Business Administration', 'Registered Nursing', 'Teaching / Education', 'Cybersecurity'],
+        [{ label: 'Enrollments', data: [5420, 4810, 4150, 3380, 2960] }],
+        { horizontal: true },
+      ],
+    },
+  },
+
+  {
+    id: 'magnitude-bar-range',
+    title: 'Range bar (floating bar)',
+    family: 'magnitude',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'range',
+    whenToUse: 'Show a span or interval for each category — e.g. the min-to-max enrollment window across cohorts, or a survey score confidence band — when a single value is insufficient.',
+    description: 'Floating horizontal bars produced by stacking a transparent base series and a visible range series; each bar represents [low, high] for its category. ECharts raw option.',
+    tags: ['categorical', 'range', 'interval', 'floating-bar', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['range'],
+    sampleData: [
+      { label: 'Business', low: 60, high: 92 },
+      { label: 'Technology', low: 55, high: 88 },
+      { label: 'Education', low: 70, high: 95 },
+      { label: 'Healthcare', low: 62, high: 90 },
+      { label: 'Engineering', low: 50, high: 85 },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['transparent', '#0070F0'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          formatter: (params: any[]) => {
+            const cat = params[0].name;
+            const low = params[0].value;
+            const high = params[1].value;
+            return `${cat}<br/>Range: ${low}% – ${high}%`;
+          },
+        },
+        legend: { show: false },
+        xAxis: { type: 'value', name: 'Completion %', min: 40, max: 100 },
+        yAxis: { type: 'category', data: ['Engineering', 'Healthcare', 'Education', 'Technology', 'Business'] },
+        series: [
+          {
+            name: 'Base',
+            type: 'bar',
+            stack: 'range',
+            itemStyle: { borderColor: 'transparent', color: 'transparent' },
+            data: [50, 62, 70, 55, 60],
+          },
+          {
+            name: 'Range',
+            type: 'bar',
+            stack: 'range',
+            itemStyle: { color: '#0070F0', borderRadius: [0, 4, 4, 0] },
+            data: [35, 28, 25, 33, 32],
+            label: { show: true, position: 'right', formatter: (p: any) => `${p.data[0] ?? p.data + (50 + 62 + 70 + 55 + 60) / 5}%` },
+          },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'magnitude-bullet',
+    title: 'Bullet chart (bar vs. target)',
+    family: 'magnitude',
+    secondaryFamilies: ['deviation'],
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'bullet',
+    whenToUse: 'Compare an actual value against a target in a compact single-row layout — the bullet chart is the space-efficient replacement for a gauge when multiple metrics are stacked vertically.',
+    description: 'Horizontal bar encoding the actual value; a markLine at the target creates a thin perpendicular tick. Multiple categories stack into a compact scorecard layout. ECharts raw option.',
+    tags: ['categorical', 'single-series', 'horizontal', 'target', 'markline', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['annotations', 'threshold', 'markline'],
+    sampleData: [
+      { label: 'Completion Rate', actual: 78, target: 85 },
+      { label: 'Retention Rate', actual: 91, target: 90 },
+      { label: 'Partner NPS', actual: 62, target: 75 },
+      { label: 'Time to Graduation', actual: 74, target: 80 },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#46B1EF'],
+        grid: { left: 160, right: 80, top: 20, bottom: 20 },
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        xAxis: { type: 'value', max: 100, name: '%' },
+        yAxis: {
+          type: 'category',
+          data: ['Time to Graduation', 'Partner NPS', 'Retention Rate', 'Completion Rate'],
+        },
+        series: [{
+          name: 'Actual',
+          type: 'bar',
+          barWidth: 16,
+          data: [74, 62, 91, 78],
+          itemStyle: { color: '#46B1EF', borderRadius: [0, 4, 4, 0] },
+          markLine: {
+            symbol: ['none', 'none'],
+            lineStyle: { color: '#002855', width: 3, type: 'solid' },
+            label: { show: false },
+            data: [
+              { xAxis: 80 },
+              { xAxis: 75 },
+              { xAxis: 90 },
+              { xAxis: 85 },
+            ],
+          },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'magnitude-radar-single',
+    title: 'Single-entity radar chart',
+    family: 'magnitude',
+    engine: 'echarts',
+    chartType: 'radar',
+    variant: 'single-entity',
+    whenToUse: 'Profile a single entity (one partner, one program) across multiple performance dimensions; the enclosed area shape immediately communicates overall strength and specific gaps.',
+    description: 'ECharts radar with a single series polygon; the filled area conveys both coverage and balance across five program-health dimensions. WGU navy fill with sky-blue stroke.',
+    tags: ['multi-axis', 'single-series', 'radial', 'profile', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['multi-axis', 'radial'],
+    sampleData: {
+      indicators: [
+        { name: 'Enrollment', max: 100 },
+        { name: 'Completion', max: 100 },
+        { name: 'Retention', max: 100 },
+        { name: 'NPS', max: 100 },
+        { name: 'Revenue', max: 100 },
+      ],
+      value: [82, 74, 88, 65, 91],
+      entity: 'Boeing Partnership',
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: {},
+        color: ['#0070F0'],
+        radar: {
+          indicator: [
+            { name: 'Enrollment', max: 100 },
+            { name: 'Completion', max: 100 },
+            { name: 'Retention', max: 100 },
+            { name: 'NPS', max: 100 },
+            { name: 'Revenue', max: 100 },
+          ],
+          splitArea: { areaStyle: { color: ['#EEF6F9', '#fff', '#EEF6F9', '#fff', '#EEF6F9'] } },
+        },
+        series: [{
+          type: 'radar',
+          data: [{
+            name: 'Boeing Partnership',
+            value: [82, 74, 88, 65, 91],
+            areaStyle: { opacity: 0.3, color: '#0070F0' },
+            lineStyle: { color: '#0070F0', width: 2 },
+            itemStyle: { color: '#0070F0' },
+          }],
+        }],
+      },
+    },
+  },
+
+  {
     id: 'magnitude-bar-race-static',
     title: 'Sorted bar (bar-race static snapshot)',
     family: 'magnitude',
