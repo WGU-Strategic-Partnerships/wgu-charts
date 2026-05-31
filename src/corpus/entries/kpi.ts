@@ -13,11 +13,11 @@ export const kpi: CorpusEntry[] = [
     tags: ['gauge', 'ring', 'percentage', 'single-metric'],
     runtimes: ['LWC', 'Next', 'HTML'],
     features: ['gauge'],
-    sampleData: { label: 'Completion Rate', percent: 78 },
+    sampleData: { label: 'Completion Rate', percent: 78, variant: 'ring' },
     spec: {
       engine: 'render-model',
       type: 'gauge',
-      data: { label: 'Completion Rate', percent: 78 },
+      data: { label: 'Completion Rate', percent: 78, variant: 'ring' },
     },
   },
   {

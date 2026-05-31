@@ -13,7 +13,7 @@ export const flow: CorpusEntry[] = [
     runtimes: ['LWC', 'Next', 'HTML'],
     features: ['flow'],
     sampleData: [
-      { stage: 'Awareness', label: 'Site Visitors', value: 84000, connector: '8.3% click-through' },
+      { stage: 'Awareness', label: 'Site Visitors', value: 84000, connector: '26.2% click-through' },
       { stage: 'Interest', label: 'Program Page Views', value: 22000, connector: '31.8% inquired' },
       { stage: 'Application', label: 'Applications Started', value: 7000, connector: '74.3% completed' },
       { stage: 'Enrolled', label: 'New Enrollments', value: 5200, connector: '91.5% persisted' },
@@ -23,7 +23,7 @@ export const flow: CorpusEntry[] = [
       engine: 'render-model',
       type: 'funnel',
       data: [
-        { stage: 'Awareness', label: 'Site Visitors', value: 84000, connector: '8.3% click-through' },
+        { stage: 'Awareness', label: 'Site Visitors', value: 84000, connector: '26.2% click-through' },
         { stage: 'Interest', label: 'Program Page Views', value: 22000, connector: '31.8% inquired' },
         { stage: 'Application', label: 'Applications Started', value: 7000, connector: '74.3% completed' },
         { stage: 'Enrolled', label: 'New Enrollments', value: 5200, connector: '91.5% persisted' },
