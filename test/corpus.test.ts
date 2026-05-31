@@ -41,11 +41,11 @@ describe('corpus registry', () => {
 });
 
 describe('corpus coverage', () => {
-  it('reports coverage per family and meets the Phase A floor (logs gap vs ~150)', () => {
+  it('reports coverage per family and meets the Phase B floor (150 entries)', () => {
     const counts = Object.fromEntries(FAMILIES_ORDER.map(f => [f, byFamily(f as any).length]));
     // eslint-disable-next-line no-console
     console.log('CORPUS COVERAGE', JSON.stringify(counts), 'total', corpus.length);
-    FAMILIES_ORDER.forEach(f => expect(counts[f]).toBeGreaterThan(0)); // every family non-empty
-    expect(corpus.length).toBeGreaterThanOrEqual(40);                  // Phase A floor; Phase B → ~150
+    FAMILIES_ORDER.forEach(f => expect(counts[f]).toBeGreaterThanOrEqual(6)); // per-family minimum
+    expect(corpus.length).toBeGreaterThanOrEqual(140);                        // Phase B floor
   });
 });

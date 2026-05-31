@@ -73,7 +73,9 @@ chart.setOption(geoChoroplethOption([{ name: 'Utah', value: 42 }]));
 
 ## Corpus (`wgu-charts/corpus`)
 
-A curated, WGU-branded registry of ~43 chart variations (Phase A) organized by analytical intent across 11 families. This is the single source the catalog app, code-export pipeline, Figma integration, and design system all read from — not a runtime dependency, but the shared schema that drives them.
+A curated, WGU-branded registry of **150 entries** across 11 families (Phase A + B complete), organized by analytical intent. This is the single source the catalog app, code-export pipeline, Figma integration, and design system all read from — not a runtime dependency, but the shared schema that drives them.
+
+The corpus covers: all native + community Chart.js types, the WGU render-models, the full ECharts tier (sunburst, treemap, sankey, graph, heatmap, gauge, geo/choropleth, radial-bar, boxplot, parallel, themeRiver, calendar), engine-parity pairs (Chart.js ↔ ECharts side-by-side), and feature-showcase entries (dataZoom, brush, visualMap, markLine/markArea annotations, drilldown, toolbox, large-data) — all filterable via `byFeature(...)`.
 
 ### Shape
 
@@ -98,7 +100,9 @@ interface CorpusEntry {
 type ChartSpec =
   | { engine: 'chartjs';       type: string;    data: unknown; labels?: string[]; opts?: unknown }
   | { engine: 'render-model';  type: string;    data: unknown; opts?: unknown }
-  | { engine: 'echarts';       factory: string; args: unknown[]; needsMap?: string };
+  // ECharts: either a named factory call OR a raw option object
+  | { engine: 'echarts'; factory: string; args: unknown[]; needsMap?: string }  // named factory
+  | { engine: 'echarts'; option: Record<string, unknown> };                      // raw option
 
 // resolveSpec(spec) renders OR generates a config from the same spec:
 // returns { kind: 'chartjs', value: Chart.js config }
@@ -116,7 +120,7 @@ const resolved = resolveSpec(bars[0].spec); // { kind:'chartjs', value: <Chart.j
 
 Other helpers: `byEngine(eng)`, `byFeature(feat)`, `search(q)`, `FAMILIES`, `FAMILIES_ORDER`.
 
-Phase A covers everything the library renders today (~43 entries); Phase B grows toward ~150 by adding new chart types — the coverage test logs the gap. `features[]` describes each chart's type-level capabilities; the full interactive feature-showcase set (dataZoom, drill-down, brush, live-update, etc.) lands in Phase B.
+Phase A + B complete (150 entries). `features[]` describes each chart's type-level capabilities and is the key used by `byFeature(...)` — e.g. `byFeature('dataZoom')`, `byFeature('drilldown')`, `byFeature('brush')`.
 
 ## Catalog
 `pnpm build` then open `catalog/index.html`.
