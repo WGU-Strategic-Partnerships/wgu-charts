@@ -41,7 +41,7 @@ export function buildConfig(spec: MountSpec): any {
     case 'combo': return comboChart(spec.labels || [], spec.data.bar, spec.data.line);
     case 'polarArea': return polarChart(spec.data);
     case 'radar': return radarChart(spec.labels || [], spec.data);
-    case 'scatter': return scatterChart(spec.data);
+    case 'scatter': return scatterChart(spec.data, spec.opts);
     case 'bubble': return bubbleChart(spec.data);
     case 'groupedBar': return groupedBarChart(spec.labels || [], spec.data, spec.opts);
     // Community plugin types (plugin UMDs must be loaded before the adapter is used)

@@ -40,4 +40,8 @@ describe('extra native charts', () => {
     const bg = polarChart([{ label: 'A', count: 1 }]).data.datasets[0].backgroundColor as string[];
     expect(bg[0]).toMatch(/cc$/);
   });
+  it('scatterChart showLine connects points', () => {
+    const cfg = scatterChart([{ label:'S', points:[{x:1,y:2},{x:3,y:4}] }], { showLine:true });
+    expect(cfg.data.datasets[0].showLine).toBe(true);
+  });
 });
