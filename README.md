@@ -3,7 +3,17 @@
 WGU-branded, dynamic Chart.js chart library. Headless config core + thin adapters.
 
 ## Install (web/React)
-`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.3.0 chart.js`
+`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.4.0 chart.js`
+
+## Use — React
+`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.4.0 chart.js react`
+
+```tsx
+import { WguChart } from 'wgu-charts/react';
+<WguChart type="bar" data={[{ label: 'MBA', count: 120 }]} onClick={(hit) => console.log(hit)} />
+// pass new `data` to live-update in place. Native + render-model types work out of the box;
+// community-plugin types require registering the plugin's controllers first.
+```
 
 ## Use — npm / bundler
 ```ts
@@ -32,5 +42,5 @@ Copy `dist/wgu-charts.umd.js` into a static resource alongside `ChartJs`; load b
 `pnpm build` then open `catalog/index.html`.
 
 ## Roadmap
-Render-models (funnel/gauge/KPI/choropleth): Plan 1b · Interactivity: Plan 2 · React: Plan 3 ·
+Render-models (funnel/gauge/KPI/choropleth): Plan 1b ✅ · Interactivity: Plan 2 ✅ · React: Plan 3 ✅ ·
 Community plugins (heatmap/treemap/sankey/boxplot/error-bars/wordcloud/candlestick/geo/graph): Plan 4 ✅ · LWC + PartnerPath migration: Plan 5.
