@@ -18,6 +18,7 @@ const PLUGIN_URLS = [
   'https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chartjs-chart-graph@4/build/index.umd.min.js',
   'https://cdn.jsdelivr.net/npm/topojson-client@3',
+  'https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js',
 ];
 
 function fetchUrl(url) {
