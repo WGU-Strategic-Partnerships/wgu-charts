@@ -5,7 +5,7 @@ export function themeRiverOption(data: [string, number, string][]): any {
   return {
     tooltip: { trigger: 'axis' },
     singleAxis: { type: 'time' },
-    color: wguTheme.colors.sequence,
+    color: cloneArr(wguTheme.colors.sequence),
     series: [{ type: 'themeRiver', data: cloneArr(data) }]
   };
 }

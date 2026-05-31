@@ -15,7 +15,7 @@ describe('echarts new-type factories', () => {
   it('sunburst', () => { const o = sunburstOption([{name:'A',children:[{name:'a1',value:2}]}]); expect(o.series[0].type).toBe('sunburst'); });
   it('radialBar', () => { const o = radialBarOption(['A','B'], [3,5]); expect(o.series[0].type).toBe('bar'); expect(o.polar).toBeTruthy(); });
   it('boxplot precomputes 5-number summary', () => { const o = boxplotOption(['A'], [[1,2,3,4,5]]); expect(o.series[0].type).toBe('boxplot'); expect(o.series[0].data[0]).toHaveLength(5); });
-  it('parallel', () => { const o = parallelOption(['x','y','z'], [{name:'r1',values:[1,2,3]}]); expect(o.series[0].type).toBe('parallel'); expect(o.parallelAxis).toHaveLength(3); });
+  it('parallel', () => { const o = parallelOption(['x','y','z'], [{name:'r1',values:[1,2,3]}]); expect(o.series[0].type).toBe('parallel'); expect(o.parallelAxis).toHaveLength(3); expect(o.parallel).toBeTruthy(); });
   it('themeRiver', () => { const o = themeRiverOption([['2024-01',5,'A']]); expect(o.series[0].type).toBe('themeRiver'); });
   it('calendarHeatmap', () => { const o = calendarHeatmapOption(2024, [['2024-01-01',5]]); expect(o.series[0].type).toBe('heatmap'); expect(o.calendar).toBeTruthy(); });
 });
