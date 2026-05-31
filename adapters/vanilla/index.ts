@@ -8,11 +8,12 @@ import { funnelModel, renderFunnel, funnelCss } from '../../src/render/funnel';
 import { gaugeModel, renderGauge, gaugeCss } from '../../src/render/gauge';
 import { kpiModel, renderKpi, kpiCss } from '../../src/render/kpi';
 import { choroplethModel, renderChoropleth, choroplethCss } from '../../src/render/choropleth';
+import { scoreTableModel, renderScoreTable, scoreTableCss, scoreTableStyleId } from '../../src/render/score-table';
 
 export type ChartType =
   | 'bar' | 'line' | 'doughnut' | 'pie' | 'combo'
   | 'polarArea' | 'radar' | 'scatter' | 'bubble' | 'groupedBar'
-  | 'funnel' | 'gauge' | 'kpi' | 'choropleth';
+  | 'funnel' | 'gauge' | 'kpi' | 'choropleth' | 'scoreTable';
 
 export interface MountSpec { type: ChartType; data: any; labels?: string[]; opts?: any; }
 export interface ChartHandle { chart: any; update: (data: any, labels?: string[]) => void; destroy: () => void; }
@@ -21,7 +22,8 @@ const RENDER_MODELS: Record<string, { build: (d: any, o?: any) => any; render: (
   funnel:     { build: funnelModel,     render: renderFunnel,     css: funnelCss,     styleId: 'wgu-funnel' },
   gauge:      { build: gaugeModel,      render: renderGauge,      css: gaugeCss,      styleId: 'wgu-gauge' },
   kpi:        { build: kpiModel,        render: renderKpi,        css: kpiCss,        styleId: 'wgu-kpi' },
-  choropleth: { build: choroplethModel, render: renderChoropleth, css: choroplethCss, styleId: 'wgu-choropleth' }
+  choropleth: { build: choroplethModel, render: renderChoropleth, css: choroplethCss, styleId: 'wgu-choropleth' },
+  scoreTable: { build: scoreTableModel, render: renderScoreTable, css: scoreTableCss, styleId: scoreTableStyleId }
 };
 
 function buildConfig(spec: MountSpec): any {
