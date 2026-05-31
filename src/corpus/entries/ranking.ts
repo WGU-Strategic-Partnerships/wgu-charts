@@ -1,2 +1,69 @@
 import type { CorpusEntry } from '../types';
-export const ranking: CorpusEntry[] = [];
+
+export const ranking: CorpusEntry[] = [
+  {
+    id: 'ranking-bar-ordered',
+    title: 'Ordered horizontal bar (ranking)',
+    family: 'ranking',
+    engine: 'chartjs',
+    chartType: 'bar',
+    variant: 'ordered',
+    whenToUse: 'Show relative rank of items when ordering itself is the insight — place highest value at top.',
+    description: 'Horizontal bars pre-sorted in descending order so the reader can immediately scan rank from top to bottom.',
+    tags: ['categorical', 'single-series', 'horizontal', 'ranking', 'sorted'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['value-labels', 'sorted'],
+    sampleData: [
+      { label: 'Computer Science', count: 540 },
+      { label: 'Business Admin', count: 480 },
+      { label: 'Nursing', count: 410 },
+      { label: 'Teaching', count: 330 },
+      { label: 'Cybersecurity', count: 270 },
+      { label: 'Data Analytics', count: 210 },
+    ],
+    spec: {
+      engine: 'chartjs',
+      type: 'bar',
+      data: [
+        { label: 'Computer Science', count: 540 },
+        { label: 'Business Admin', count: 480 },
+        { label: 'Nursing', count: 410 },
+        { label: 'Teaching', count: 330 },
+        { label: 'Cybersecurity', count: 270 },
+        { label: 'Data Analytics', count: 210 },
+      ],
+    },
+  },
+  {
+    id: 'ranking-bar-medal',
+    title: 'Medal bar (top-highlighted ranking)',
+    family: 'ranking',
+    engine: 'chartjs',
+    chartType: 'bar',
+    variant: 'medal',
+    whenToUse: 'Emphasize the top-ranked item while preserving rank context for the rest of the list.',
+    description: 'Sorted horizontal bar with a lead color applied so the #1 item stands out; useful for leaderboard summaries.',
+    tags: ['categorical', 'single-series', 'horizontal', 'ranking', 'sorted', 'branded'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['value-labels', 'sorted', 'branded'],
+    sampleData: [
+      { label: 'MBA', count: 620 },
+      { label: 'BSCS', count: 480 },
+      { label: 'BSN', count: 395 },
+      { label: 'BSIT', count: 310 },
+      { label: 'TEP', count: 225 },
+    ],
+    spec: {
+      engine: 'chartjs',
+      type: 'bar',
+      data: [
+        { label: 'MBA', count: 620 },
+        { label: 'BSCS', count: 480 },
+        { label: 'BSN', count: 395 },
+        { label: 'BSIT', count: 310 },
+        { label: 'TEP', count: 225 },
+      ],
+      opts: { leadColor: '#97E152' },
+    },
+  },
+];

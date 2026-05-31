@@ -1,2 +1,67 @@
 import type { CorpusEntry } from '../types';
-export const deviation: CorpusEntry[] = [];
+
+export const deviation: CorpusEntry[] = [
+  {
+    id: 'deviation-bar-diverging',
+    title: 'Diverging bar',
+    family: 'deviation',
+    engine: 'chartjs',
+    chartType: 'bar',
+    variant: 'diverging',
+    whenToUse: 'Show values that deviate above and below a meaningful zero point — e.g., net change, surplus vs. deficit.',
+    description: 'Horizontal bars extend in both directions from a shared zero baseline; positive and negative values cross zero, making direction and magnitude immediately clear.',
+    tags: ['diverging', 'single-series', 'horizontal', 'positive-negative'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['value-labels', 'diverging'],
+    sampleData: [
+      { label: 'Q1', count: 12 },
+      { label: 'Q2', count: -8 },
+      { label: 'Q3', count: 5 },
+      { label: 'Q4', count: -3 },
+    ],
+    spec: {
+      engine: 'chartjs',
+      type: 'bar',
+      data: [
+        { label: 'Q1', count: 12 },
+        { label: 'Q2', count: -8 },
+        { label: 'Q3', count: 5 },
+        { label: 'Q4', count: -3 },
+      ],
+    },
+  },
+  {
+    id: 'deviation-column-pos-neg',
+    title: 'Plus/minus column',
+    family: 'deviation',
+    engine: 'chartjs',
+    chartType: 'bar',
+    variant: 'plus-minus-column',
+    whenToUse: 'Display year-over-year or period-over-period change as vertical bars that cross zero; columns rising above baseline are positive deviations, those below are negative.',
+    description: 'Vertical column chart with mixed positive and negative values; bars crossing the zero axis signal deviation direction at a glance.',
+    tags: ['diverging', 'single-series', 'vertical', 'positive-negative'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['value-labels', 'diverging'],
+    sampleData: [
+      { label: 'Jan', count: 15 },
+      { label: 'Feb', count: -6 },
+      { label: 'Mar', count: 22 },
+      { label: 'Apr', count: -11 },
+      { label: 'May', count: 8 },
+      { label: 'Jun', count: -4 },
+    ],
+    spec: {
+      engine: 'chartjs',
+      type: 'bar',
+      data: [
+        { label: 'Jan', count: 15 },
+        { label: 'Feb', count: -6 },
+        { label: 'Mar', count: 22 },
+        { label: 'Apr', count: -11 },
+        { label: 'May', count: 8 },
+        { label: 'Jun', count: -4 },
+      ],
+      opts: { orientation: 'vertical' },
+    },
+  },
+];
