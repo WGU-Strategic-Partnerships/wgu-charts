@@ -23,6 +23,13 @@ describe('resolveSpec', () => {
     expect(() => resolveSpec({ engine:'echarts', factory:'registerWguEchartsTheme', args:[] } as any)).toThrow(/unknown/i);
   });
   it('throws on unknown render-model type', () => { expect(() => resolveSpec({ engine:'render-model', type:'nope', data:{} })).toThrow(/unknown/i); });
+  it('resolves a raw echarts option spec', () => {
+    const r = resolveSpec({ engine:'echarts', option:{ series:[{ type:'sunburst', data:[{name:'A',value:1}] }] } } as any);
+    expect(r.kind).toBe('echarts'); expect((r.value as any).series[0].type).toBe('sunburst');
+  });
+  it('throws on an echarts spec with neither factory nor option', () => {
+    expect(() => resolveSpec({ engine:'echarts' } as any)).toThrow(/option or factory/i);
+  });
 });
 
 import { corpus, byFamily, byEngine, byFeature, search } from '../src/corpus';

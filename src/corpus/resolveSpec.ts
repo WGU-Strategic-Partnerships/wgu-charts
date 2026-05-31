@@ -31,7 +31,16 @@ export function resolveSpec(spec: ChartSpec): Resolved {
     const model = rm.build(spec.data, spec.opts);
     return { kind: 'render-model', value: model, html: rm.render(model) };
   }
-  const fn = (echartsFactories as any)[spec.factory];
-  if (typeof fn !== 'function' || !spec.factory.endsWith('Option')) throw new Error('corpus: unknown echarts factory "' + spec.factory + '"');
-  return { kind: 'echarts', value: fn(...(spec.args as any[])) };
+  // echarts
+  if ('option' in spec && (spec as any).option) {
+    return { kind: 'echarts', value: (spec as any).option };
+  }
+  if ('factory' in spec && (spec as any).factory) {
+    const fn = (echartsFactories as any)[(spec as any).factory];
+    if (typeof fn !== 'function' || !(spec as any).factory.endsWith('Option')) {
+      throw new Error('corpus: unknown echarts factory "' + (spec as any).factory + '"');
+    }
+    return { kind: 'echarts', value: fn(...(spec as any).args) };
+  }
+  throw new Error('corpus: echarts spec needs an option or factory');
 }

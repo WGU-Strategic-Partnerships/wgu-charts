@@ -5,7 +5,8 @@ export type Engine = 'chartjs' | 'echarts' | 'render-model';
 export type ChartSpec =
   | { engine: 'chartjs'; type: string; data: unknown; labels?: string[]; opts?: unknown }
   | { engine: 'render-model'; type: string; data: unknown; opts?: unknown }
-  | { engine: 'echarts'; factory: string; args: unknown[]; needsMap?: string };
+  | { engine: 'echarts'; factory: string; args: unknown[]; needsMap?: string }
+  | { engine: 'echarts'; option: Record<string, unknown>; needsMap?: string };
 export interface CorpusEntry {
   id: string; title: string; family: Family; secondaryFamilies?: Family[];
   // must equal spec.engine — enforced by corpus.test.ts
