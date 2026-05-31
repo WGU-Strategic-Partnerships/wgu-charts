@@ -41,9 +41,15 @@ const SAMPLES = [
   src:"WGUCharts.mount(el,{type:'kpi',data:{label,value,delta,trend}})" }
 ,{ type:'choropleth', title:'Choropleth (US states)', data:[{state:'TX',count:120},{state:'CA',count:90},{state:'FL',count:70},{state:'NY',count:55},{state:'UT',count:140}],
   src:"WGUCharts.mount(el,{type:'choropleth',data:[{state,count}]})" }
+,{ type:'gauge', title:'Gauge (half, % to target)', data:{label:'% to Target', variant:'half', value:110, min:0, max:150, thresholds:[80,99], unit:'%'},
+  src:"WGUCharts.mount(el,{type:'gauge',data:{variant:'half',value,min,max,thresholds}})" }
+,{ type:'gauge', title:'Gauge (half, days-since)', data:{label:'Days Since Activity', variant:'half', value:22, min:0, max:100, thresholds:[30,60], zoneColors:['#97E152','#F5A623','#E5484D']},
+  src:"WGUCharts.mount(el,{type:'gauge',data:{variant:'half',zoneColors:[green,amber,red]}})" }
+,{ type:'scoreTable', title:'Score table (Advancers)', data:{ columns:[{key:'acct',label:'Account'},{key:'vert',label:'Vertical'},{key:'pct',label:'% to Target',align:'right'}], rows:[{acct:'Acme Health',vert:'Healthcare',pct:128},{acct:'Globex',vert:'Business',pct:104},{acct:'Initech',vert:'IT',pct:71}], bandColumn:'pct', bands:[{min:0,color:'#FDE2E1'},{min:80,color:'#FFF3D6'},{min:100,color:'#E6F6D9'}] },
+  src:"WGUCharts.mount(el,{type:'scoreTable',data:{columns,rows,bandColumn,bands}})" }
 ];
 
-const RENDER_MODEL = new Set(['funnel','gauge','kpi','choropleth']);
+const RENDER_MODEL = new Set(['funnel','gauge','kpi','choropleth','scoreTable']);
 const grid = document.getElementById('grid');
 SAMPLES.forEach((s, i) => {
   const card = document.createElement('div');

@@ -554,7 +554,7 @@ var WGUCharts = (() => {
   }
 
   // src/render/runtime.ts
-  var RENDER_MODEL_TYPES = /* @__PURE__ */ new Set(["funnel", "gauge", "kpi", "choropleth"]);
+  var RENDER_MODEL_TYPES = /* @__PURE__ */ new Set(["funnel", "gauge", "kpi", "choropleth", "scoreTable"]);
   function isRenderModelType(t) {
     return RENDER_MODEL_TYPES.has(t);
   }
@@ -702,10 +702,53 @@ var WGUCharts = (() => {
   // src/render/gauge.ts
   var R = 42;
   var CIRC = 2 * Math.PI * R;
+  var HALF_R = 40;
+  var DEFAULT_ZONE_COLORS = ["#E5484D", "#F5A623", "#97E152"];
+  function buildHalfModel(o) {
+    const value = Number(o.value) || 0;
+    const min = Number(o.min) || 0;
+    const max = Number(o.max) || 0;
+    const range = max === min ? 0 : max - min;
+    const t = range === 0 ? 0 : Math.max(0, Math.min(1, (value - min) / range));
+    const pointerDeg = -90 + t * 180;
+    const displayValue = String(value) + (o.unit || "");
+    const zoneColors = o.zoneColors || DEFAULT_ZONE_COLORS;
+    let zoneBounds;
+    if (o.thresholds && o.thresholds.length >= 2 && range > 0) {
+      const t1 = Math.max(0, Math.min(1, (o.thresholds[0] - min) / range));
+      const t2 = Math.max(0, Math.min(1, (o.thresholds[1] - min) / range));
+      zoneBounds = [0, t1, t2, 1];
+    } else {
+      zoneBounds = [0, 1 / 3, 2 / 3, 1];
+    }
+    const zones = [
+      { from: zoneBounds[0], to: zoneBounds[1], color: zoneColors[0] },
+      { from: zoneBounds[1], to: zoneBounds[2], color: zoneColors[1] },
+      { from: zoneBounds[2], to: zoneBounds[3], color: zoneColors[2] }
+    ];
+    return {
+      variant: "half",
+      label: o.label,
+      sub: o.sub,
+      dark: !!o.dark,
+      unit: o.unit,
+      value,
+      min,
+      max,
+      t,
+      pointerDeg,
+      displayValue,
+      zones
+    };
+  }
   function gaugeModel(o) {
+    if (o.variant === "half") {
+      return buildHalfModel(o);
+    }
     const clampPct = Math.max(0, Math.min(100, Number(o.percent) || 0));
     const filled = clampPct / 100 * CIRC;
     return {
+      variant: "ring",
       label: o.label,
       sub: o.sub,
       color: o.color || "#0070F0",
@@ -717,10 +760,39 @@ var WGUCharts = (() => {
       dashArray: `${filled.toFixed(2)} ${(CIRC - filled).toFixed(2)}`
     };
   }
-  function renderGauge(m) {
-    const cls = "pp-gauge" + (m.dark ? " pp-gauge--on-dark" : "");
+  function fracToDeg(frac) {
+    return 180 - frac * 180;
+  }
+  function polarToCartesian(cx, cy, r, deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  }
+  function renderHalfGauge(m) {
+    const cx = 50, cy = 50, r = HALF_R;
+    const zonePaths = m.zones.map((z) => {
+      const startDeg = fracToDeg(z.from);
+      const endDeg = fracToDeg(z.to);
+      const [sx, sy] = polarToCartesian(cx, cy, r, startDeg);
+      const [ex, ey] = polarToCartesian(cx, cy, r, endDeg);
+      const d = `M ${sx.toFixed(3)} ${sy.toFixed(3)} A ${r} ${r} 0 0 0 ${ex.toFixed(3)} ${ey.toFixed(3)}`;
+      return `<path d="${d}" fill="none" stroke="${escapeHtml(z.color)}" stroke-width="9" stroke-linecap="round"/>`;
+    }).join("");
+    const tipY = cy - r + 8;
+    const pointerPoints = `50,${tipY} 47,${cy} 53,${cy}`;
+    const pointer = `<polygon points="${pointerPoints}" fill="#002855" transform="rotate(${m.pointerDeg.toFixed(2)} ${cx} ${cy})"/>`;
+    const dot = `<circle cx="${cx}" cy="${cy}" r="3" fill="#002855"/>`;
+    const cls = "pp-gauge pp-gauge--half" + (m.dark ? " pp-gauge--on-dark" : "");
     const sub = m.sub ? `<div class="pp-gauge__sub">${escapeHtml(m.sub)}</div>` : "";
-    return `<div class="${cls}"><div class="pp-gauge__svg-wrap" style="width:${m.size}px"><svg viewBox="0 0 100 100" class="pp-gauge__svg" style="width:${m.size}px" role="img" aria-label="${escapeHtml((m.label ? m.label + ": " : "") + m.displayPct)}"><circle class="pp-gauge__track" cx="50" cy="50" r="${m.radius}" fill="none" stroke-width="10"></circle><circle class="pp-gauge__arc" cx="50" cy="50" r="${m.radius}" fill="none" stroke="${escapeHtml(m.color)}" stroke-width="10" stroke-dasharray="${m.dashArray}" stroke-linecap="round" transform="rotate(-90 50 50)"></circle></svg><div class="pp-gauge__center"><span class="pp-gauge__pct num">${escapeHtml(m.displayPct)}</span></div></div><div class="pp-gauge__label">${escapeHtml(m.label)}</div>${sub}</div>`;
+    return `<div class="${cls}"><svg viewBox="0 0 100 55" class="pp-gauge__svg pp-gauge__svg--half" role="img" aria-label="${escapeHtml(m.label + ": " + m.displayValue)}">${zonePaths}${pointer}${dot}</svg><div class="pp-gauge__pct num">${escapeHtml(m.displayValue)}</div><div class="pp-gauge__label pp-gauge__label--half">${escapeHtml(m.label)}</div>${sub}</div>`;
+  }
+  function renderGauge(m) {
+    if (m.variant === "half") {
+      return renderHalfGauge(m);
+    }
+    const rm = m;
+    const cls = "pp-gauge" + (rm.dark ? " pp-gauge--on-dark" : "");
+    const sub = rm.sub ? `<div class="pp-gauge__sub">${escapeHtml(rm.sub)}</div>` : "";
+    return `<div class="${cls}"><div class="pp-gauge__svg-wrap" style="width:${rm.size}px"><svg viewBox="0 0 100 100" class="pp-gauge__svg" style="width:${rm.size}px" role="img" aria-label="${escapeHtml((rm.label ? rm.label + ": " : "") + rm.displayPct)}"><circle class="pp-gauge__track" cx="50" cy="50" r="${rm.radius}" fill="none" stroke-width="10"></circle><circle class="pp-gauge__arc" cx="50" cy="50" r="${rm.radius}" fill="none" stroke="${escapeHtml(rm.color)}" stroke-width="10" stroke-dasharray="${rm.dashArray}" stroke-linecap="round" transform="rotate(-90 50 50)"></circle></svg><div class="pp-gauge__center"><span class="pp-gauge__pct num">${escapeHtml(rm.displayPct)}</span></div></div><div class="pp-gauge__label">${escapeHtml(rm.label)}</div>${sub}</div>`;
   }
   var gaugeCss = `/* Gauge \u2014 ported from the design gauge()/.gauge styles.
    Animated arc draw-on, serif numeral percent, optional sub + onDark variant. */
@@ -788,6 +860,36 @@ var WGUCharts = (() => {
 .pp-gauge--on-dark .pp-gauge__pct { color: #fff; }
 .pp-gauge--on-dark .pp-gauge__label { color: #fff; }
 .pp-gauge--on-dark .pp-gauge__sub { color: #BBD0E8; }
+
+/* Half-circle (MBR) variant */
+.pp-gauge--half {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.pp-gauge__svg--half {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    display: block;
+}
+.pp-gauge--half .pp-gauge__pct {
+    font-size: 28px;
+    color: #002855;
+    line-height: 1;
+    margin-top: -4px;
+}
+.pp-gauge__label--half {
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 11px;
+    font-weight: 700;
+    color: #264468;
+    text-align: center;
+}
+.pp-gauge--on-dark .pp-gauge__label--half { color: #fff; }
+.pp-gauge--on-dark.pp-gauge--half .pp-gauge__pct { color: #fff; }
 `;
 
   // src/render/kpi.ts
@@ -1200,12 +1302,92 @@ var WGUCharts = (() => {
 }
 `;
 
+  // src/render/score-table.ts
+  var scoreTableStyleId = "wgu-score-table";
+  function pickBand(v, bands) {
+    if (!bands || !bands.length || isNaN(v)) return void 0;
+    const sorted = [...bands].sort((a, b) => a.min - b.min);
+    let picked;
+    for (const band of sorted) {
+      if (v >= band.min) picked = band.color;
+    }
+    return picked;
+  }
+  function scoreTableModel(o) {
+    const rows = o.rows.map((r) => {
+      const cells = {};
+      for (const col of o.columns) {
+        const value = r[col.key] ?? "";
+        const align = col.align || "left";
+        const bg = o.bandColumn && col.key === o.bandColumn && o.bands ? pickBand(Number(value), o.bands) : void 0;
+        cells[col.key] = { value, align, bg };
+      }
+      return { cells };
+    });
+    return { columns: o.columns, rows, caption: o.caption };
+  }
+  function renderScoreTable(m) {
+    const caption = m.caption ? `<caption class="pp-stable__caption">${escapeHtml(m.caption)}</caption>` : "";
+    const thead = `<thead><tr>${m.columns.map(
+      (c) => `<th class="pp-stable__th${c.align === "right" ? " pp-stable__r" : ""}" scope="col">${escapeHtml(c.label)}</th>`
+    ).join("")}</tr></thead>`;
+    const tbody = `<tbody>${m.rows.map(
+      (row) => `<tr>${m.columns.map((col) => {
+        const cell = row.cells[col.key];
+        const bgStyle = cell.bg ? ` style="background:${escapeHtml(cell.bg)}"` : "";
+        const alignClass = cell.align === "right" ? " pp-stable__r" : "";
+        return `<td class="pp-stable__td${alignClass}"${bgStyle}>${escapeHtml(cell.value)}</td>`;
+      }).join("")}</tr>`
+    ).join("")}</tbody>`;
+    return `<div class="pp-stable-wrap"><table class="pp-stable">${caption}${thead}${tbody}</table></div>`;
+  }
+  var scoreTableCss = `/* Score table \u2014 branded MBR banded table */
+.pp-stable-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+.pp-stable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    color: #264468;
+}
+.pp-stable__caption {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #002855;
+    padding: 0 0 6px;
+    caption-side: top;
+}
+.pp-stable__th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: #002855;
+    padding: 6px 10px;
+    border-bottom: 1.5px solid rgba(0,40,85,.15);
+    white-space: nowrap;
+}
+.pp-stable__td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(0,40,85,.10);
+}
+.pp-stable__r {
+    text-align: right;
+}
+.pp-stable tbody tr:last-child .pp-stable__td {
+    border-bottom: none;
+}
+`;
+
   // adapters/vanilla/index.ts
   var RENDER_MODELS = {
     funnel: { build: funnelModel, render: renderFunnel, css: funnelCss, styleId: "wgu-funnel" },
     gauge: { build: gaugeModel, render: renderGauge, css: gaugeCss, styleId: "wgu-gauge" },
     kpi: { build: kpiModel, render: renderKpi, css: kpiCss, styleId: "wgu-kpi" },
-    choropleth: { build: choroplethModel, render: renderChoropleth, css: choroplethCss, styleId: "wgu-choropleth" }
+    choropleth: { build: choroplethModel, render: renderChoropleth, css: choroplethCss, styleId: "wgu-choropleth" },
+    scoreTable: { build: scoreTableModel, render: renderScoreTable, css: scoreTableCss, styleId: scoreTableStyleId }
   };
   function buildConfig(spec) {
     switch (spec.type) {
