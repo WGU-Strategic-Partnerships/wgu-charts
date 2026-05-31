@@ -26,4 +26,18 @@ describe('extra native charts', () => {
     expect(cfg.type).toBe('bubble');
     expect((cfg.data.datasets[0].data[0] as any).r).toBe(8);
   });
+  it('polarChart tolerates empty input', () => {
+    const cfg = polarChart([]);
+    expect(cfg.type).toBe('polarArea');
+    expect(cfg.data.datasets[0].data).toEqual([]);
+  });
+  it('scatterChart tolerates empty input', () => {
+    const cfg = scatterChart([]);
+    expect(cfg.type).toBe('scatter');
+    expect(cfg.data.datasets).toEqual([]);
+  });
+  it('polarChart applies the cc alpha suffix to colors', () => {
+    const bg = polarChart([{ label: 'A', count: 1 }]).data.datasets[0].backgroundColor as string[];
+    expect(bg[0]).toMatch(/cc$/);
+  });
 });

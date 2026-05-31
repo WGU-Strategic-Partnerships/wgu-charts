@@ -24,4 +24,13 @@ describe('barChart', () => {
     expect((cfg.options!.scales!.x as any).stacked).toBe(true);
     expect((cfg.options!.scales!.y as any).stacked).toBe(true);
   });
+  it('backgroundColor is a function when no leadColor', () => {
+    const bg = barChart(data).data.datasets[0].backgroundColor;
+    expect(typeof bg).toBe('function');
+  });
+  it('handles all-zero data without NaN in percent tooltip', () => {
+    const cfg = barChart([{ label: 'A', count: 0 }]);
+    const cb = (cfg.options!.plugins!.tooltip as any).callbacks.afterLabel;
+    expect(cb({ parsed: { x: 0 } })).toBe(' 0% of total');
+  });
 });

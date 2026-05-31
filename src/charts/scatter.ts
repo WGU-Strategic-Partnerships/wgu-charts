@@ -12,7 +12,7 @@ export function scatterChart(series: PointSeries[]): ChartConfiguration<'scatter
       label: s.label, data: cloneArr(s.points), backgroundColor: seq[i % seq.length], pointRadius: 5, pointHoverRadius: 7 })) },
     options: { responsive: true, maintainAspectRatio: false,
       plugins: { legend: { position: 'bottom' }, tooltip: baseTooltip() }, animation: baseAnimation(),
-      scales: { x: { grid: { color: wguTheme.colors.grid }, ticks: { color: tickColor } },
-                y: { grid: { color: wguTheme.colors.grid }, ticks: { color: tickColor } } } }
+      scales: { x: { border: { display: false }, grid: { color: wguTheme.colors.grid }, ticks: { color: tickColor } },
+                y: { border: { display: false }, grid: { color: wguTheme.colors.grid }, ticks: { color: tickColor } } } }
   };
 }

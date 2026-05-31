@@ -15,7 +15,7 @@ export function comboChart(labels: string[], bar: ComboSeries, line: ComboSeries
           backgroundColor: (c: any) => (c.active ? C.navy : C.medium), hoverBackgroundColor: C.navy,
           borderRadius: wguTheme.radius, maxBarThickness: 64, yAxisID: 'y', order: 2 },
         { type: 'line', label: line.label, data: cloneArr(line.data),
-          borderColor: C.sky, backgroundColor: C.sky, borderWidth: 3, tension: 0.35,
+          borderColor: C.sky, borderWidth: 3, tension: 0.35,
           pointBackgroundColor: '#fff', pointBorderColor: C.sky, pointBorderWidth: 2,
           pointRadius: 5, pointHoverRadius: 7, yAxisID: 'y1', order: 1 }
       ]

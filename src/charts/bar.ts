@@ -56,7 +56,9 @@ export function barChart(data: BarDatum[], opts: BarOptions = {}): ChartConfigur
         x: { stacked: !!opts.stacked, display: horizontal ? false : true, beginAtZero: true,
              suggestedMax: horizontal ? mx * 1.08 : undefined, grid: { display: false },
              border: { display: false }, ticks: { color: tickColor } },
-        y: { stacked: !!opts.stacked, grid: { display: false }, border: { display: false },
+        y: { stacked: !!opts.stacked, beginAtZero: true,
+             suggestedMax: horizontal ? undefined : mx * 1.08,
+             grid: { display: false }, border: { display: false },
              ticks: { color: C.fg2 } }
       }
     }
