@@ -799,45 +799,40 @@ var WGUCharts = (() => {
   }
 
   // src/charts/community/candlestick.ts
-  function candlestickChart(data, opts) {
+  function candlestickChart(data, opts = {}) {
+    const rows = Array.isArray(data) ? data : [];
+    const points = rows.map((d, i) => ({ x: typeof d.x === "number" ? d.x : i, o: d.o, h: d.h, l: d.l, c: d.c }));
+    const labels = rows.map((d, i) => typeof d.x === "number" ? String(d.x) : d.x);
     return {
       type: "candlestick",
       data: {
-        labels: (Array.isArray(data) ? data : []).map((d) => d.x),
         datasets: [{
-          label: opts?.label || "",
-          data: cloneArr(data),
-          color: {
-            up: "#97E152",
-            down: "#E5484D",
-            unchanged: "#46B1EF"
-          },
-          borderColor: {
-            up: "#97E152",
-            down: "#E5484D",
-            unchanged: "#46B1EF"
-          }
+          label: opts.label || "",
+          data: cloneArr(points),
+          color: { up: "#97E152", down: "#E5484D", unchanged: "#46B1EF" },
+          borderColor: { up: "#97E152", down: "#E5484D", unchanged: "#46B1EF" }
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: baseTooltip()
-        },
+        plugins: { legend: { display: false }, tooltip: baseTooltip() },
         scales: {
           x: {
-            type: "category",
+            type: "linear",
+            offset: true,
+            min: -0.5,
+            max: points.length - 0.5,
             grid: { display: false },
             border: { display: false },
-            ticks: { color: wguTheme.colors.fg2 }
+            ticks: {
+              color: wguTheme.colors.fg2,
+              stepSize: 1,
+              autoSkip: false,
+              callback: (v) => labels[v] ?? ""
+            }
           },
-          y: {
-            grid: { color: wguTheme.colors.grid },
-            border: { display: false },
-            ticks: { color: tickColor }
-          }
+          y: { grid: { color: wguTheme.colors.grid }, border: { display: false }, ticks: { color: tickColor } }
         }
       }
     };
