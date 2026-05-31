@@ -3,10 +3,10 @@
 WGU-branded, dynamic Chart.js chart library. Headless config core + thin adapters.
 
 ## Install (web/React)
-`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.7.0 chart.js`
+`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.7.1 chart.js`
 
 ## Use — React
-`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.7.0 chart.js react`
+`pnpm add github:WGU-Strategic-Partnerships/wgu-charts#v0.7.1 chart.js react`
 
 ```tsx
 import { WguChart } from 'wgu-charts/react';
