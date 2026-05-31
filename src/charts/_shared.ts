@@ -20,8 +20,8 @@ export function baseTooltip() {
 }
 
 export function baseAnimation() {
-  return { duration: wguTheme.animation.duration, easing: wguTheme.animation.easing as any };
+  return { duration: wguTheme.animation.duration, easing: wguTheme.animation.easing };
 }
 
-export const baseGrid = { color: wguTheme.colors.grid };
+export const baseGrid = Object.freeze({ color: wguTheme.colors.grid });
 export const tickColor = wguTheme.colors.tick;

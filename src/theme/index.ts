@@ -7,7 +7,7 @@ export interface WguTheme {
   font: { family: string; numerals: string; weights: { book: number; medium: number; heavy: number } };
   radius: number;
   tooltip: { backgroundColor: string; padding: number; cornerRadius: number };
-  animation: { duration: number; easing: string };
+  animation: { duration: number; easing: import('chart.js').EasingFunction };
   modes: { light: { fg: string; surface: string }; dark: { fg: string; surface: string } };
 }
 
@@ -25,7 +25,7 @@ export const wguTheme: WguTheme = {
   },
   radius: 6,
   tooltip: { backgroundColor: '#002855', padding: 11, cornerRadius: 8 },
-  animation: { duration: 900, easing: 'easeOutQuart' },
+  animation: { duration: 900, easing: 'easeOutQuart' as import('chart.js').EasingFunction },
   modes: {
     light: { fg: '#264468', surface: '#FFFFFF' },
     dark: { fg: '#BBD0E8', surface: '#002855' }
@@ -33,9 +33,10 @@ export const wguTheme: WguTheme = {
 };
 
 function deepMerge<T>(base: T, over: any): T {
+  // Arrays are replaced wholesale (not merged) to keep token lists predictable.
   if (Array.isArray(base)) return (over ?? base) as T;
   if (typeof base === 'object' && base) {
-    const out: any = Array.isArray(base) ? [...(base as any)] : { ...base };
+    const out: any = { ...base };
     for (const k of Object.keys(over ?? {})) {
       out[k] = k in (base as any) ? deepMerge((base as any)[k], over[k]) : over[k];
     }
@@ -44,6 +45,6 @@ function deepMerge<T>(base: T, over: any): T {
   return (over ?? base) as T;
 }
 
-export function createTheme(overrides: Partial<WguTheme> | Record<string, any> = {}): WguTheme {
+export function createTheme(overrides: Partial<WguTheme> = {}): WguTheme {
   return deepMerge(wguTheme, overrides);
 }

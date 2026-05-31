@@ -1,18 +1,22 @@
 import type { Plugin } from 'chart.js';
 import { wguTheme } from '../theme';
 
+type AnyChart = import('chart.js').Chart<any, any, any>;
+
 const FF = wguTheme.font.family;
 
 export const pBarLabels: Plugin = {
   id: 'pBarLabels',
-  afterDatasetsDraw(ch: any) {
-    if (ch.config.type !== 'bar' || ch.options.indexAxis !== 'y') return;
-    const ctx = ch.ctx, ds = ch.data.datasets[0];
+  afterDatasetsDraw(ch: AnyChart) {
+    const c = ch as any;
+    if (c.config.type !== 'bar' || c.options.indexAxis !== 'y') return;
+    const ctx = c.ctx, ds = c.data.datasets[0];
+    if (!ds) return;
     ctx.save();
     ctx.font = '700 12.5px ' + FF;
     ctx.fillStyle = wguTheme.colors.fg2;
     ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    ch.getDatasetMeta(0).data.forEach((bar: any, i: number) => {
+    c.getDatasetMeta(0).data.forEach((bar: any, i: number) => {
       ctx.fillText(Number(ds.data[i]).toLocaleString('en-US'), bar.x + 8, bar.y);
     });
     ctx.restore();
@@ -21,16 +25,17 @@ export const pBarLabels: Plugin = {
 
 export const pPointLabels: Plugin = {
   id: 'pPointLabels',
-  afterDatasetsDraw(ch: any) {
-    if (ch.config.type !== 'line') return;
-    const ctx = ch.ctx;
+  afterDatasetsDraw(ch: AnyChart) {
+    const c = ch as any;
+    if (c.config.type !== 'line') return;
+    const ctx = c.ctx;
     ctx.save();
     ctx.font = '700 11px ' + FF; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-    ch.data.datasets.forEach((dset: any, di: number) => {
-      if (ch.isDatasetVisible && !ch.isDatasetVisible(di)) return;
+    c.data.datasets.forEach((dset: any, di: number) => {
+      if (c.isDatasetVisible && !c.isDatasetVisible(di)) return;
       ctx.fillStyle = dset.borderColor;
-      ch.getDatasetMeta(di).data.forEach((pt: any, i: number) => {
-        ctx.fillText(dset.data[i], pt.x, pt.y - 9);
+      c.getDatasetMeta(di).data.forEach((pt: any, i: number) => {
+        ctx.fillText(Number(dset.data[i]).toLocaleString('en-US'), pt.x, pt.y - 9);
       });
     });
     ctx.restore();
@@ -39,11 +44,12 @@ export const pPointLabels: Plugin = {
 
 export const pCrosshair: Plugin = {
   id: 'pCrosshair',
-  afterDraw(ch: any) {
-    if (ch.config.type !== 'line') return;
-    const act = ch.getActiveElements ? ch.getActiveElements() : [];
+  afterDraw(ch: AnyChart) {
+    const c = ch as any;
+    if (c.config.type !== 'line') return;
+    const act = c.getActiveElements ? c.getActiveElements() : [];
     if (!act.length) return;
-    const x = act[0].element.x, a = ch.chartArea, ctx = ch.ctx;
+    const x = act[0].element.x, a = c.chartArea, ctx = c.ctx;
     ctx.save();
     ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom);
     ctx.lineWidth = 1; ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(0,40,85,.22)';
@@ -51,4 +57,4 @@ export const pCrosshair: Plugin = {
   }
 };
 
-export const wguPlugins = [pBarLabels, pPointLabels, pCrosshair];
+export const wguPlugins: Plugin[] = [pBarLabels, pPointLabels, pCrosshair];
