@@ -13,8 +13,8 @@ export function baseTooltip() {
     backgroundColor: wguTheme.tooltip.backgroundColor,
     padding: wguTheme.tooltip.padding,
     cornerRadius: wguTheme.tooltip.cornerRadius,
-    titleFont: { weight: '700' as const },
-    bodyFont: { weight: '500' as const },
+    titleFont: { weight: 700 as const },
+    bodyFont: { weight: 500 as const },
     displayColors: false
   };
 }
