@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WGU Charts — ECharts proof-of-concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;800&family=Newsreader:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --navy:#002855; --medium:#0070F0; --sky:#46B1EF; --lime:#97E152; --grey:#F1F1F1; --fg:#264468; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:'Jost','Futura PT',Arial,sans-serif; color:var(--fg); background:var(--grey); }
+    .wgu-header { display:flex; align-items:center; gap:16px; padding:18px 28px; background:var(--navy); color:#fff; }
+    .wgu-header .wordmark { font-weight:800; font-size:22px; letter-spacing:1px; }
+    .wgu-header .title { font-weight:500; opacity:.9; }
+    .wgu-header .tag { margin-left:auto; font-size:13px; opacity:.8; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(440px,1fr)); gap:22px; padding:28px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,23,49,.08); padding:18px; }
+    .card.wide { grid-column:1/-1; }
+    .card h3 { margin:0 0 4px; font-size:16px; }
+    .card .why { margin:0 0 12px; font-size:13px; color:#6B7C93; }
+    .chart { width:100%; height:320px; }
+    .chart.tall { height:460px; }
+  </style>
+</head>
+<body>
+  <header class="wgu-header">
+    <span class="wordmark">WGU</span><span class="title">ECharts — proof of concept</span>
+    <span class="tag">Apache ECharts · WGU theme · the "comprehensive tier"</span>
+  </header>
+  <main class="grid">
+    <div class="card wide"><h3>US choropleth map</h3><p class="why">The headline gap: Chart.js can't do real geographic maps well (our current choropleth is hand-rolled SVG). ECharts does GeoJSON maps natively.</p><div id="map" class="chart tall"></div></div>
+    <div class="card"><h3>Sankey (flows)</h3><p class="why">Lead → application → enrollment flow.</p><div id="sankey" class="chart"></div></div>
+    <div class="card"><h3>Treemap</h3><p class="why">Enrollment share by program.</p><div id="treemap" class="chart"></div></div>
+    <div class="card"><h3>Force-directed graph</h3><p class="why">Partner / program network.</p><div id="graph" class="chart"></div></div>
+    <div class="card"><h3>Heatmap</h3><p class="why">Engagement by day × hour.</p><div id="heatmap" class="chart"></div></div>
+    <div class="card"><h3>Gauge</h3><p class="why">% to target, WGU palette.</p><div id="gauge" class="chart"></div></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    // ---- WGU ECharts theme ----
+    const WGU = { navy:'#002855', medium:'#0070F0', sky:'#46B1EF', lime:'#97E152', fg2:'#264468', grey:'#A7A7A7', grid:'rgba(0,40,85,.08)' };
+    echarts.registerTheme('wgu', {
+      color: [WGU.medium, WGU.sky, WGU.navy, WGU.lime, WGU.fg2, WGU.grey],
+      backgroundColor: 'transparent',
+      textStyle: { fontFamily: "'Jost','Futura PT',Arial,sans-serif", color: WGU.fg2 },
+      title: { textStyle: { color: WGU.navy } },
+      categoryAxis: { axisLine:{lineStyle:{color:WGU.grid}}, axisTick:{show:false}, axisLabel:{color:WGU.fg2}, splitLine:{show:false} },
+      valueAxis: { axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:'#6B7C93'}, splitLine:{lineStyle:{color:WGU.grid}} },
+      tooltip: { backgroundColor: WGU.navy, borderWidth:0, textStyle:{color:'#fff'} }
+    });
+    const init = (id) => echarts.init(document.getElementById(id), 'wgu');
+
+    // ---- Sankey ----
+    init('sankey').setOption({
+      tooltip: { trigger:'item' },
+      series: [{ type:'sankey', emphasis:{focus:'adjacency'},
+        lineStyle:{ color:'gradient', opacity:.4 },
+        itemStyle:{ borderWidth:0 },
+        data:[{name:'Leads'},{name:'Applications'},{name:'Enrolled'},{name:'Lost'}],
+        links:[{source:'Leads',target:'Applications',value:320},{source:'Applications',target:'Enrolled',value:210},{source:'Applications',target:'Lost',value:110}] }]
+    });
+
+    // ---- Treemap ----
+    init('treemap').setOption({
+      tooltip:{},
+      series:[{ type:'treemap', roam:false, nodeClick:false, breadcrumb:{show:false},
+        label:{ color:'#fff', fontWeight:600 },
+        levels:[{ itemStyle:{ borderColor:'#fff', borderWidth:2, gapWidth:2 } }],
+        data:[{name:'MBA',value:120},{name:'BSN',value:90},{name:'IT',value:70},{name:'Education',value:55},{name:'Business',value:48},{name:'Health',value:62}] }]
+    });
+
+    // ---- Force-directed graph ----
+    init('graph').setOption({
+      tooltip:{},
+      series:[{ type:'graph', layout:'force', roam:true, label:{show:true,color:WGU.navy},
+        force:{ repulsion:180, edgeLength:90 },
+        lineStyle:{ color:WGU.fg2, opacity:.5 },
+        itemStyle:{ color:WGU.medium },
+        symbolSize:34,
+        data:[{name:'WGU'},{name:'Health'},{name:'Business'},{name:'IT'},{name:'Education'}],
+        links:[{source:'WGU',target:'Health'},{source:'WGU',target:'Business'},{source:'WGU',target:'IT'},{source:'WGU',target:'Education'},{source:'Health',target:'Business'}] }]
+    });
+  </script>
+  <script>
+    // Heatmap data (separate block to keep syntax clean)
+    (function(){
+      const days=['Mon','Tue','Wed','Thu','Fri'], hours=['8a','10a','12p','2p','4p'];
+      const seeds=[2,5,9,6,3, 4,7,8,5,2, 3,6,9,7,4, 5,8,6,4,2, 2,4,7,9,5];
+      const data=[]; let k=0;
+      for(let h=0;h<hours.length;h++){ for(let d=0;d<days.length;d++){ data.push([d,h,seeds[k++%seeds.length]]); } }
+      echarts.init(document.getElementById('heatmap'),'wgu').setOption({
+        tooltip:{position:'top'},
+        grid:{ height:'62%', top:'8%' },
+        xAxis:{ type:'category', data:days, splitArea:{show:true} },
+        yAxis:{ type:'category', data:hours, splitArea:{show:true} },
+        visualMap:{ min:0, max:10, calculable:true, orient:'horizontal', left:'center', bottom:'2%',
+          inRange:{ color:['#EEF6F9','#46B1EF','#0070F0','#002855'] }, textStyle:{color:'#6B7C93'} },
+        series:[{ type:'heatmap', data, label:{show:false}, emphasis:{itemStyle:{shadowBlur:8,shadowColor:'rgba(0,40,85,.3)'}} }]
+      });
+
+      // ---- Gauge ----
+      echarts.init(document.getElementById('gauge'),'wgu').setOption({
+        series:[{ type:'gauge', min:0, max:150, startAngle:210, endAngle:-30,
+          progress:{show:true, width:14, itemStyle:{color:'#0070F0'}},
+          axisLine:{ lineStyle:{ width:14, color:[[0.53,'#E5484D'],[0.66,'#F5A623'],[1,'#97E152']] } },
+          pointer:{ itemStyle:{color:'#002855'} },
+          axisTick:{show:false}, splitLine:{length:14,lineStyle:{color:'#fff',width:2}},
+          axisLabel:{color:'#6B7C93',distance:18,fontSize:10},
+          anchor:{show:true,size:14,itemStyle:{color:'#002855'}},
+          detail:{ valueAnimation:true, formatter:'{value}%', color:'#002855', fontFamily:"'Newsreader',Georgia,serif", fontSize:28, offsetCenter:[0,'40%'] },
+          title:{ offsetCenter:[0,'72%'], color:'#264468', fontSize:12 },
+          data:[{ value:110, name:'% TO TARGET' }] }]
+      });
+    })();
+  </script>
+  <script>
+    // ---- US choropleth map (public US-states GeoJSON via CDN; feature.properties.name = state) ----
+    fetch('https://cdn.jsdelivr.net/gh/PublicaMundi/MappingAPI@master/data/geojson/us-states.json')
+      .then(r => r.json())
+      .then(usa => {
+        echarts.registerMap('USA', usa);
+        const vals=[['Texas',120],['California',90],['Florida',70],['New York',55],['Utah',140],['Arizona',60],['Ohio',45],['Georgia',52],['Nevada',38],['Colorado',41]];
+        echarts.init(document.getElementById('map'),'wgu').setOption({
+          tooltip:{ trigger:'item', formatter:(p)=> `${p.name}: ${p.value||0}` },
+          visualMap:{ min:0, max:140, left:'left', bottom:'4%', text:['High','Low'], calculable:true,
+            inRange:{ color:['#EEF6F9','#46B1EF','#0070F0','#002855'] }, textStyle:{color:'#6B7C93'} },
+          series:[{ type:'map', map:'USA', roam:false, emphasis:{ label:{show:false}, itemStyle:{areaColor:'#97E152'} },
+            itemStyle:{ borderColor:'#fff', borderWidth:0.5 },
+            data: vals.map(([name,value])=>({name,value})) }]
+        });
+      })
+      .catch(e => { document.getElementById('map').innerHTML = '<p style="color:#888;font:13px sans-serif;padding:20px">US map needs internet (GeoJSON). '+e+'</p>'; });
+  </script>
+</body>
+</html>
