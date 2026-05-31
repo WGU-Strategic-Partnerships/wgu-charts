@@ -5,3 +5,7 @@ export * from './treemap';
 export * from './graph';
 export * from './heatmap';
 export * from './gauge';
+export * from './bar';
+export * from './line';
+export * from './pie';
+export * from './scatter';
