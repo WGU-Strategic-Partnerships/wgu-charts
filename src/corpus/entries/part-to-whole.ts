@@ -459,40 +459,58 @@ export const partToWhole: CorpusEntry[] = [
   },
 
   {
-    id: 'ptw-icicle',
-    title: 'Icicle chart (top-down sunburst)',
+    id: 'ptw-sunburst-multilevel',
+    title: 'Multi-level sunburst',
     family: 'part-to-whole',
     engine: 'echarts',
     chartType: 'sunburst',
-    variant: 'icicle',
-    whenToUse: 'Display a hierarchical breakdown in a rectangular layout where reading top-to-bottom is more natural than reading outward from a center — program portfolios or org-chart-style breakdowns.',
-    description: 'ECharts sunburst with layout:\'radial\' disabled; by using a flat rectangular approach the icicle variant shows parent nodes at the top and children branching downward. WGU colors.',
-    tags: ['proportional', 'hierarchical', 'icicle', 'rectangular', 'echarts'],
+    variant: 'multilevel',
+    whenToUse: 'Reveal three or more levels of a part-to-whole hierarchy simultaneously — e.g. College → Program → Concentration — when seeing the proportions at every depth level at once matters more than drilling interactively.',
+    description: 'Radial sunburst with three rings radiating outward: the innermost ring shows colleges, the middle ring shows programs, and the outer ring shows concentrations; arc lengths encode enrollment share at every level. Distinct from the 2-level sunburst by exposing a full third tier, making leaf-level proportions immediately visible without any interaction. WGU brand palette.',
+    tags: ['proportional', 'hierarchical', 'radial', 'multilevel', 'hierarchy', 'echarts'],
     runtimes: ['LWC', 'Next', 'HTML'],
-    features: ['nested', 'hierarchical'],
+    features: ['nested', 'hierarchical', 'multilevel'],
     sampleData: [
-      { name: 'WGU', children: [
-        { name: 'Business', children: [{ name: 'MBA', value: 420 }, { name: 'BSBA', value: 310 }] },
-        { name: 'Technology', children: [{ name: 'BSCS', value: 380 }, { name: 'BSIT', value: 270 }] },
-        { name: 'Education', children: [{ name: 'TEP', value: 290 }] },
+      { name: 'Business', children: [
+        { name: 'MBA', children: [{ name: 'General MBA', value: 180 }, { name: 'MBA-HCM', value: 140 }, { name: 'MBA-IT', value: 100 }] },
+        { name: 'BSBA', children: [{ name: 'Accounting', value: 130 }, { name: 'Marketing', value: 110 }, { name: 'Finance', value: 70 }] },
+        { name: 'MSML', children: [{ name: 'Leadership', value: 110 }, { name: 'Healthcare Mgmt', value: 70 }] },
+      ]},
+      { name: 'Technology', children: [
+        { name: 'BSCS', children: [{ name: 'Software Eng', value: 160 }, { name: 'AI/ML', value: 130 }, { name: 'Cloud', value: 90 }] },
+        { name: 'BSIT', children: [{ name: 'Network Admin', value: 110 }, { name: 'Data Mgmt', value: 90 }, { name: 'Security', value: 70 }] },
+      ]},
+      { name: 'Education', children: [
+        { name: 'TEP', children: [{ name: 'Elementary', value: 120 }, { name: 'Secondary', value: 100 }, { name: 'Special Ed', value: 70 }] },
+        { name: 'MAED', children: [{ name: 'Curriculum', value: 90 }, { name: 'Admin', value: 70 }] },
       ]},
     ],
     spec: {
       engine: 'echarts',
       option: {
-        color: ['#0070F0', '#46B1EF', '#002855', '#97E152'],
+        color: ['#0070F0', '#46B1EF', '#002855', '#97E152', '#264468', '#8B5CF6'],
         tooltip: { trigger: 'item' },
         series: [{
           type: 'sunburst',
           data: [
-            { name: 'Business', children: [{ name: 'MBA', value: 420 }, { name: 'BSBA', value: 310 }] },
-            { name: 'Technology', children: [{ name: 'BSCS', value: 380 }, { name: 'BSIT', value: 270 }] },
-            { name: 'Education', children: [{ name: 'TEP', value: 290 }] },
+            { name: 'Business', children: [
+              { name: 'MBA', children: [{ name: 'General MBA', value: 180 }, { name: 'MBA-HCM', value: 140 }, { name: 'MBA-IT', value: 100 }] },
+              { name: 'BSBA', children: [{ name: 'Accounting', value: 130 }, { name: 'Marketing', value: 110 }, { name: 'Finance', value: 70 }] },
+              { name: 'MSML', children: [{ name: 'Leadership', value: 110 }, { name: 'Healthcare Mgmt', value: 70 }] },
+            ]},
+            { name: 'Technology', children: [
+              { name: 'BSCS', children: [{ name: 'Software Eng', value: 160 }, { name: 'AI/ML', value: 130 }, { name: 'Cloud', value: 90 }] },
+              { name: 'BSIT', children: [{ name: 'Network Admin', value: 110 }, { name: 'Data Mgmt', value: 90 }, { name: 'Security', value: 70 }] },
+            ]},
+            { name: 'Education', children: [
+              { name: 'TEP', children: [{ name: 'Elementary', value: 120 }, { name: 'Secondary', value: 100 }, { name: 'Special Ed', value: 70 }] },
+              { name: 'MAED', children: [{ name: 'Curriculum', value: 90 }, { name: 'Admin', value: 70 }] },
+            ]},
           ],
           radius: [0, '90%'],
           sort: 'desc',
           emphasis: { focus: 'ancestor' },
-          label: { rotate: 'tangential', fontSize: 11 },
+          label: { rotate: 'radial', fontSize: 10, minAngle: 8 },
           itemStyle: { borderColor: '#fff', borderWidth: 2 },
         }],
       },

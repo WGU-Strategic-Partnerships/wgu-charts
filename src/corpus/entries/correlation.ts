@@ -517,7 +517,7 @@ export const correlation: CorpusEntry[] = [
   },
 
   {
-    id: 'distribution-scatter-visualmap',
+    id: 'correlation-scatter-visualmap',
     title: 'Bubble scatter with visualMap (3-D encoding)',
     family: 'correlation',
     secondaryFamilies: ['distribution'],
