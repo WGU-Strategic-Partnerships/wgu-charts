@@ -110,6 +110,42 @@ export const distribution: CorpusEntry[] = [
     },
   },
   {
+    id: 'distribution-boxplot-echarts',
+    title: 'Box plot (ECharts)',
+    family: 'distribution',
+    engine: 'echarts',
+    chartType: 'boxplot',
+    whenToUse: 'Display distribution spread and outliers per category using the ECharts engine — preferred when native zoom or brush selection on the box plot is needed.',
+    description: 'ECharts boxplot auto-computes Q1, median, Q3, whiskers from raw sample arrays via the boxplotOption factory. WGU-themed with tooltip.',
+    tags: ['distribution', 'spread', 'quartile', 'outlier', 'continuous', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['distribution'],
+    sampleData: {
+      labels: ['MBA', 'BSCS', 'BSN', 'TEP', 'MSML'],
+      samples: [
+        [71, 74, 78, 82, 85, 88, 91, 93, 96],
+        [68, 72, 76, 80, 84, 87, 90, 94],
+        [73, 76, 79, 83, 86, 89, 92, 95],
+        [66, 70, 75, 79, 83, 87, 91, 97],
+        [74, 77, 80, 84, 87, 90, 93],
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'boxplotOption',
+      args: [
+        ['MBA', 'BSCS', 'BSN', 'TEP', 'MSML'],
+        [
+          [71, 74, 78, 82, 85, 88, 91, 93, 96],
+          [68, 72, 76, 80, 84, 87, 90, 94],
+          [73, 76, 79, 83, 86, 89, 92, 95],
+          [66, 70, 75, 79, 83, 87, 91, 97],
+          [74, 77, 80, 84, 87, 90, 93],
+        ],
+      ],
+    },
+  },
+  {
     id: 'distribution-heatmap-echarts',
     title: 'Heatmap (ECharts)',
     family: 'distribution',
