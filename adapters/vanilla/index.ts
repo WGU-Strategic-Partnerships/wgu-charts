@@ -30,10 +30,13 @@ export function createWGUCharts(Chart: any) {
   return {
     mount(target: string | HTMLElement, spec: MountSpec): ChartHandle {
       const el = typeof target === 'string' ? document.querySelector(target) : target;
+      if (el === null) throw new Error('WGUCharts: target "' + String(target) + '" not found in document');
       const config = buildConfig(spec);
       const chart = new Chart(el, config);
       return {
         chart,
+        // NOTE: combo charts expect data = { bar: ComboSeries, line: ComboSeries }.
+        // Calling update() with a flat array for a combo chart will throw. Combo live-update is Plan 2.
         update(data: any, labels?: string[]) {
           const next = buildConfig({ ...spec, data, labels: labels ?? spec.labels });
           chart.data.labels = next.data.labels;

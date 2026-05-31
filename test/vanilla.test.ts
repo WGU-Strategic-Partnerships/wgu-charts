@@ -1,3 +1,4 @@
+/** @vitest-environment jsdom */
 import { describe, it, expect } from 'vitest';
 import { createWGUCharts } from '../adapters/vanilla/index';
 
@@ -11,6 +12,15 @@ class FakeChart {
 }
 
 describe('vanilla adapter', () => {
+  it('registers wgu plugins with the provided Chart constructor', () => {
+    FakeChart.registered = [];
+    createWGUCharts(FakeChart as any);
+    expect(FakeChart.registered.length).toBeGreaterThan(0);
+  });
+  it('throws if a string target is not found in document', () => {
+    const WGUCharts = createWGUCharts(FakeChart as any);
+    expect(() => WGUCharts.mount('#ghost', { type: 'bar', data: [] })).toThrow(/not found/);
+  });
   it('mounts a bar chart from data and returns a handle', () => {
     const WGUCharts = createWGUCharts(FakeChart as any);
     const el = {} as any;

@@ -7,23 +7,35 @@
   "module": "./dist/wgu-charts.esm.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/wgu-charts.esm.js", "require": "./dist/wgu-charts.umd.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/wgu-charts.esm.js",
+      "require": "./dist/wgu-charts.umd.js"
+    }
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": { "chart.js": "^4.4.0" },
+  "peerDependencies": {
+    "chart.js": "^4.4.0"
+  },
   "devDependencies": {
     "chart.js": "^4.4.4",
+    "jsdom": "^29.1.1",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

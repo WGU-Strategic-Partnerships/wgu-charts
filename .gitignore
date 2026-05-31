@@ -1,4 +1,5 @@
 node_modules
 dist
+!dist/wgu-charts.umd.js
 *.log
 .DS_Store
