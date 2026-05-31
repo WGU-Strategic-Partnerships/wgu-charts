@@ -61,4 +61,16 @@ describe('vanilla adapter', () => {
     WGUCharts.mount(document.createElement('div'), { type: 'funnel', data: [{ label: 'B', value: 3 }] });
     expect(document.querySelectorAll('#wgu-funnel').length).toBe(1);
   });
+  it('fires onClick with the hit datum when the canvas is clicked', () => {
+    class ClickChart extends FakeChart {
+      canvas = document.createElement('canvas');
+      getElementsAtEventForMode(){ return [{datasetIndex:0,index:0}]; }
+    }
+    const WGUCharts = createWGUCharts(ClickChart as any);
+    const hits:any[] = [];
+    const h = WGUCharts.mount(document.createElement('div'), { type:'bar', data:[{label:'A',count:5}], onClick:(hit)=>hits.push(hit) });
+    h.chart.canvas.dispatchEvent(new Event('click'));
+    expect(hits.length).toBe(1);
+    expect(hits[0].label).toBe('A');
+  });
 });

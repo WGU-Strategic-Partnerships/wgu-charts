@@ -11,6 +11,8 @@ import { gaugeModel, renderGauge, gaugeCss } from '../../src/render/gauge';
 import { kpiModel, renderKpi, kpiCss } from '../../src/render/kpi';
 import { choroplethModel, renderChoropleth, choroplethCss } from '../../src/render/choropleth';
 import { scoreTableModel, renderScoreTable, scoreTableCss, scoreTableStyleId } from '../../src/render/score-table';
+import type { Hit } from '../../src/interaction';
+import { hitTest, applyData } from '../../src/interaction';
 
 export type ChartType =
   | 'bar' | 'line' | 'doughnut' | 'pie' | 'combo'
@@ -19,7 +21,7 @@ export type ChartType =
   | 'matrix' | 'treemap' | 'sankey' | 'boxplot' | 'barWithErrorBars'
   | 'wordCloud' | 'candlestick' | 'bubbleMap' | 'forceDirectedGraph';
 
-export interface MountSpec { type: ChartType; data: any; labels?: string[]; opts?: any; }
+export interface MountSpec { type: ChartType; data: any; labels?: string[]; opts?: any; onClick?: (hit: Hit) => void; onDrill?: (hit: Hit) => void; }
 export interface ChartHandle { chart: any; update: (data: any, labels?: string[]) => void; destroy: () => void; }
 
 const RENDER_MODELS: Record<string, { build: (d: any, o?: any) => any; render: (m: any) => string; css: string; styleId: string }> = {
@@ -78,17 +80,30 @@ export function createWGUCharts(Chart: any) {
 
       const config = buildConfig(spec);
       const chart = new Chart(el, config);
+
+      let onClickListener: ((e: any) => void) | undefined;
+      if ((spec.onClick || spec.onDrill) && chart.canvas) {
+        onClickListener = (e: any) => {
+          const hit = hitTest(chart, e);
+          if (!hit) return;
+          if (spec.onClick) spec.onClick(hit);
+          if (spec.onDrill) spec.onDrill(hit);
+        };
+        chart.canvas.addEventListener('click', onClickListener);
+      }
+
       return {
         chart,
         // NOTE: combo charts expect data = { bar: ComboSeries, line: ComboSeries }.
         // Calling update() with a flat array for a combo chart will throw. Combo live-update is Plan 2.
         update(data: any, labels?: string[]) {
           const next = buildConfig({ ...spec, data, labels: labels ?? spec.labels });
-          chart.data.labels = next.data.labels;
-          chart.data.datasets = next.data.datasets;
-          chart.update();
+          applyData(chart, { labels: next.data.labels, datasets: next.data.datasets });
         },
-        destroy() { chart.destroy(); }
+        destroy() {
+          if (onClickListener && chart.canvas) chart.canvas.removeEventListener('click', onClickListener);
+          chart.destroy();
+        }
       };
     }
   };
