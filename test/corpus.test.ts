@@ -21,3 +21,11 @@ describe('resolveSpec', () => {
   it('throws on unknown echarts factory', () => { expect(() => resolveSpec({ engine:'echarts', factory:'nopeOption', args:[] })).toThrow(/unknown/i); });
   it('throws on unknown render-model type', () => { expect(() => resolveSpec({ engine:'render-model', type:'nope', data:{} })).toThrow(/unknown/i); });
 });
+
+import { corpus, byFamily, byEngine, byFeature, search } from '../src/corpus';
+describe('corpus registry', () => {
+  it('array with unique ids', () => { expect(Array.isArray(corpus)).toBe(true); const ids = corpus.map(e=>e.id); expect(new Set(ids).size).toBe(ids.length); });
+  it('byFamily/byEngine filter correctly', () => { expect(byFamily('magnitude').every(e=>e.family==='magnitude')).toBe(true); expect(byEngine('echarts').every(e=>e.engine==='echarts')).toBe(true); });
+  it('every entry resolves and engine matches spec.engine', () => { corpus.forEach(e => { expect(() => resolveSpec(e.spec)).not.toThrow(); expect(e.engine).toBe(e.spec.engine); }); });
+  it('search returns an array', () => { expect(Array.isArray(search('bar'))).toBe(true); });
+});
