@@ -11,7 +11,9 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/wgu-charts.esm.js",
       "require": "./dist/wgu-charts.umd.js"
-    }
+    },
+    "./vanilla": { "types": "./dist/vanilla.d.ts", "import": "./dist/vanilla.js" },
+    "./react":   { "types": "./dist/react.d.ts",   "import": "./dist/react.js" }
   },
   "files": [
     "dist",
