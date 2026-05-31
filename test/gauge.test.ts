@@ -17,4 +17,9 @@ describe('gauge', () => {
     expect(html).toContain('Conversion'); expect(html).toContain('90.8%');
     expect(html).toContain('pp-gauge__arc'); expect(html).toContain('CVS');
   });
+  it('escapes caller-supplied label and color', () => {
+    const html = renderGauge(gaugeModel({ label: '<x>', percent: 50, color: '"><script>alert(1)</script>' }));
+    expect(html).toContain('&lt;x&gt;');
+    expect(html).not.toContain('<script>');
+  });
 });
