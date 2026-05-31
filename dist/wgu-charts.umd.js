@@ -760,26 +760,31 @@ var WGUCharts = (() => {
       dashArray: `${filled.toFixed(2)} ${(CIRC - filled).toFixed(2)}`
     };
   }
+  function polar(cx, cy, r, deg) {
+    const a = deg * Math.PI / 180;
+    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+  }
   function fracToDeg(frac) {
     return 180 - frac * 180;
   }
-  function polarToCartesian(cx, cy, r, deg) {
-    const rad = (deg - 90) * Math.PI / 180;
-    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  function arcPath(cx, cy, r, deg0, deg1) {
+    const [x0, y0] = polar(cx, cy, r, deg0);
+    const [x1, y1] = polar(cx, cy, r, deg1);
+    const large = Math.abs(deg1 - deg0) > 180 ? 1 : 0;
+    const sweep = deg0 > deg1 ? 1 : 0;
+    return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${large} ${sweep} ${x1.toFixed(2)} ${y1.toFixed(2)}`;
   }
   function renderHalfGauge(m) {
     const cx = 50, cy = 50, r = HALF_R;
     const zonePaths = m.zones.map((z) => {
-      const startDeg = fracToDeg(z.from);
-      const endDeg = fracToDeg(z.to);
-      const [sx, sy] = polarToCartesian(cx, cy, r, startDeg);
-      const [ex, ey] = polarToCartesian(cx, cy, r, endDeg);
-      const d = `M ${sx.toFixed(3)} ${sy.toFixed(3)} A ${r} ${r} 0 0 0 ${ex.toFixed(3)} ${ey.toFixed(3)}`;
-      return `<path d="${d}" fill="none" stroke="${escapeHtml(z.color)}" stroke-width="9" stroke-linecap="round"/>`;
+      const deg0 = fracToDeg(z.from);
+      const deg1 = fracToDeg(z.to);
+      const d = arcPath(cx, cy, r, deg0, deg1);
+      return `<path d="${d}" fill="none" stroke="${escapeHtml(z.color)}" stroke-width="9" stroke-linecap="butt"/>`;
     }).join("");
-    const tipY = cy - r + 8;
-    const pointerPoints = `50,${tipY} 47,${cy} 53,${cy}`;
-    const pointer = `<polygon points="${pointerPoints}" fill="#002855" transform="rotate(${m.pointerDeg.toFixed(2)} ${cx} ${cy})"/>`;
+    const pointerDeg = fracToDeg(m.t);
+    const [tipX, tipY] = polar(cx, cy, r - 6, pointerDeg);
+    const pointer = `<line x1="${cx}" y1="${cy}" x2="${tipX.toFixed(2)}" y2="${tipY.toFixed(2)}" stroke="#002855" stroke-width="2.5" stroke-linecap="round"/>`;
     const dot = `<circle cx="${cx}" cy="${cy}" r="3" fill="#002855"/>`;
     const cls = "pp-gauge pp-gauge--half" + (m.dark ? " pp-gauge--on-dark" : "");
     const sub = m.sub ? `<div class="pp-gauge__sub">${escapeHtml(m.sub)}</div>` : "";

@@ -71,55 +71,46 @@ export function gaugeModel(o: GaugeOptions) {
   };
 }
 
-// Convert a fraction [0..1] to a degree on the semicircle: 0 → 180° (left), 1 → 0° (right)
+// Standard-math polar: 0°=east/right, 90°=north/up, 180°=west/left; y-axis inverted for screen.
+function polar(cx: number, cy: number, r: number, deg: number): [number, number] {
+  const a = (deg * Math.PI) / 180;
+  return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+}
+
+// Arc path from deg0 to deg1, sweeping clockwise over the top semicircle (deg0 > deg1).
+// Map fraction [0..1] → angle: frac=0 → 180° (left), frac=1 → 0° (right).
 function fracToDeg(frac: number): number {
   return 180 - frac * 180;
 }
 
-// Polar to cartesian for SVG arc, given center, radius, and angle in degrees
-function polarToCartesian(cx: number, cy: number, r: number, deg: number): [number, number] {
-  const rad = (deg - 90) * Math.PI / 180;
-  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
-}
-
-// Build an SVG arc path for a zone segment
-function describeArc(cx: number, cy: number, r: number, startDeg: number, endDeg: number): string {
-  const [sx, sy] = polarToCartesian(cx, cy, r, startDeg);
-  const [ex, ey] = polarToCartesian(cx, cy, r, endDeg);
-  // The arc always goes clockwise (sweep=1); large-arc if span > 180°
-  const deltaAngle = Math.abs(endDeg - startDeg);
-  const largeArc = deltaAngle > 180 ? 1 : 0;
-  return `M ${sx.toFixed(3)} ${sy.toFixed(3)} A ${r} ${r} 0 ${largeArc} 1 ${ex.toFixed(3)} ${ey.toFixed(3)}`;
+function arcPath(cx: number, cy: number, r: number, deg0: number, deg1: number): string {
+  const [x0, y0] = polar(cx, cy, r, deg0);
+  const [x1, y1] = polar(cx, cy, r, deg1);
+  const large = Math.abs(deg1 - deg0) > 180 ? 1 : 0;
+  // deg0 > deg1 (e.g. 180 → 60) means clockwise over the top → sweep=1
+  const sweep = deg0 > deg1 ? 1 : 0;
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${large} ${sweep} ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 }
 
 function renderHalfGauge(m: ReturnType<typeof buildHalfModel>): string {
   const cx = 50, cy = 50, r = HALF_R;
 
-  // Render zone arcs: fraction → SVG angle mapping: frac=0 → 180° (left), frac=1 → 0° (right)
-  // We go counterclockwise visually. Use standard polar coords adjusted:
-  // angle in "standard" terms for the arc: left end is 180°, right end is 0°.
-  // But we draw sweeping from left to right (counterclockwise in standard SVG coords).
-  // Actually: use the half-circle convention where frac goes 180→0 deg (left to right).
-  // SVG arc sweep direction: we want left→right = decreasing angle.
-  // Use sweep-flag=0 (counterclockwise) with startDeg=fracToDeg(from), endDeg=fracToDeg(to):
-  //   frac=0 → 180°, frac=1 → 0°, so from < to means startDeg > endDeg → sweeps correctly.
-
+  // Zone arcs: each zone's from/to [0..1] maps to degrees 180→0 (left→right).
+  // For zone {from, to}: deg0=fracToDeg(from) > deg1=fracToDeg(to), sweep clockwise over top.
   const zonePaths = m.zones.map(z => {
-    const startDeg = fracToDeg(z.from);
-    const endDeg = fracToDeg(z.to);
-    const [sx, sy] = polarToCartesian(cx, cy, r, startDeg);
-    const [ex, ey] = polarToCartesian(cx, cy, r, endDeg);
-    const d = `M ${sx.toFixed(3)} ${sy.toFixed(3)} A ${r} ${r} 0 0 0 ${ex.toFixed(3)} ${ey.toFixed(3)}`;
-    return `<path d="${d}" fill="none" stroke="${escapeHtml(z.color)}" stroke-width="9" stroke-linecap="round"/>`;
+    const deg0 = fracToDeg(z.from);
+    const deg1 = fracToDeg(z.to);
+    const d = arcPath(cx, cy, r, deg0, deg1);
+    return `<path d="${d}" fill="none" stroke="${escapeHtml(z.color)}" stroke-width="9" stroke-linecap="butt"/>`;
   }).join('');
 
-  // Pointer: triangle polygon pointing upward, rotated from center
-  // Base of triangle at (50,50), tip pointing up at (50, 50-r+6)
-  const tipY = cy - r + 8;
-  const pointerPoints = `50,${tipY} 47,${cy} 53,${cy}`;
-  const pointer = `<polygon points="${pointerPoints}" fill="#002855" transform="rotate(${m.pointerDeg.toFixed(2)} ${cx} ${cy})"/>`;
+  // Pointer: line from center to tip (slightly inside arc), plus hub circle.
+  // t=0 → 180° (left), t=1 → 0° (right), t=0.5 → 90° (straight up).
+  const pointerDeg = fracToDeg(m.t);
+  const [tipX, tipY] = polar(cx, cy, r - 6, pointerDeg);
+  const pointer = `<line x1="${cx}" y1="${cy}" x2="${tipX.toFixed(2)}" y2="${tipY.toFixed(2)}" stroke="#002855" stroke-width="2.5" stroke-linecap="round"/>`;
 
-  // Center dot
+  // Center dot/hub
   const dot = `<circle cx="${cx}" cy="${cy}" r="3" fill="#002855"/>`;
 
   const cls = 'pp-gauge pp-gauge--half' + (m.dark ? ' pp-gauge--on-dark' : '');
