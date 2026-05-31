@@ -1,0 +1,14 @@
+:root { --navy:#002855; --medium:#0070F0; --grey:#F1F1F1; --fg:#264468; }
+* { box-sizing: border-box; }
+body { margin:0; font-family:'Jost','Futura PT',Arial,sans-serif; color:var(--fg); background:var(--grey); }
+body[data-mode="dark"] { background:var(--navy); color:#BBD0E8; }
+.wgu-header { display:flex; align-items:center; gap:16px; padding:18px 28px; background:var(--navy); color:#fff; }
+.wgu-header .wordmark { font-weight:800; font-size:22px; letter-spacing:1px; }
+.wgu-header .title { font-weight:500; opacity:.9; }
+.mode-toggle { margin-left:auto; background:var(--medium); color:#fff; border:0; border-radius:6px; padding:8px 14px; font-family:inherit; cursor:pointer; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:22px; padding:28px; }
+.card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,23,49,.08); padding:18px; }
+body[data-mode="dark"] .card { background:#0a3a66; }
+.card h3 { margin:0 0 4px; font-size:16px; }
+.card .spec { font-family:ui-monospace,Menlo,monospace; font-size:12px; opacity:.7; margin:0 0 12px; }
+.card .canvas-wrap { position:relative; height:260px; }
