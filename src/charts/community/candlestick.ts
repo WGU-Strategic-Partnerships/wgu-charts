@@ -17,6 +17,7 @@ export function candlestickChart(data: CandlestickDatum[], opts?: CandlestickOpt
   return {
     type: 'candlestick',
     data: {
+      labels: (Array.isArray(data) ? data : []).map((d) => d.x),
       datasets: [{
         label: opts?.label || '',
         data: cloneArr(data),
@@ -35,7 +36,6 @@ export function candlestickChart(data: CandlestickDatum[], opts?: CandlestickOpt
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      parsing: false,
       plugins: {
         legend: { display: false },
         tooltip: baseTooltip()

@@ -10,5 +10,7 @@ describe('candlestickChart', () => {
     expect(cfg.data.datasets[0].data).not.toBe(data);
     expect(cfg.data.datasets[0].color.up).toBe('#97E152');
     expect(cfg.options.scales.x.type).toBe('category');
+    expect(cfg.data.labels).toEqual(['Mon', 'Tue']);
+    expect(cfg.options.parsing).toBeUndefined();
   });
 });

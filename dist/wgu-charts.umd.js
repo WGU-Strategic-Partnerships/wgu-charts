@@ -803,6 +803,7 @@ var WGUCharts = (() => {
     return {
       type: "candlestick",
       data: {
+        labels: (Array.isArray(data) ? data : []).map((d) => d.x),
         datasets: [{
           label: opts?.label || "",
           data: cloneArr(data),
@@ -821,7 +822,6 @@ var WGUCharts = (() => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        parsing: false,
         plugins: {
           legend: { display: false },
           tooltip: baseTooltip()
