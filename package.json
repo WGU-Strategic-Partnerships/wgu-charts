@@ -1,0 +1,29 @@
+{
+  "name": "wgu-charts",
+  "version": "0.1.0",
+  "description": "WGU-branded, dynamic Chart.js chart library",
+  "type": "module",
+  "main": "./dist/wgu-charts.umd.js",
+  "module": "./dist/wgu-charts.esm.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/wgu-charts.esm.js", "require": "./dist/wgu-charts.umd.js", "types": "./dist/index.d.ts" }
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": { "chart.js": "^4.4.0" },
+  "devDependencies": {
+    "chart.js": "^4.4.4",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
