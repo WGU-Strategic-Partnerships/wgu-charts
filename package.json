@@ -13,7 +13,8 @@
       "require": "./dist/wgu-charts.umd.js"
     },
     "./vanilla": { "types": "./dist/vanilla.d.ts", "import": "./dist/vanilla.js" },
-    "./react":   { "types": "./dist/react.d.ts",   "import": "./dist/react.js" }
+    "./react":   { "types": "./dist/react.d.ts",   "import": "./dist/react.js" },
+    "./echarts": { "types": "./dist/echarts.d.ts", "import": "./dist/echarts.js" }
   },
   "files": [
     "dist",
@@ -31,6 +32,9 @@
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "echarts": {
       "optional": true
     }
   },
