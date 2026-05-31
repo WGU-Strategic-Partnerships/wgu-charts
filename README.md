@@ -20,6 +20,10 @@ new Chart(canvas, barChart([{ label: 'MBA', count: 120 }]));
 <script>WGUCharts.mount('#el', { type: 'bar', data: [{ label: 'MBA', count: 120 }] });</script>
 ```
 
+> **Note (Plan 1):** the `mount/update/destroy` adapter is exposed via the UMD global `WGUCharts`
+> (for plain-HTML and Salesforce). npm/bundler consumers use the raw config factories directly
+> (see the npm example above). A typed ESM adapter entry ships with the React adapter in Plan 3.
+
 ## Use — Salesforce
 Copy `dist/wgu-charts.umd.js` into a static resource alongside `ChartJs`; load both via
 `loadScript`, then call the global `WGUCharts`. (Dedicated LWC tiles: Plan 5.)

@@ -27,5 +27,5 @@ function build(data: SliceDatum[], cutout: string | number): ChartConfiguration<
   };
 }
 
-export function doughnutChart(data: SliceDatum[], cutout: string | number = '72%') { return build(data, cutout); }
+export function doughnutChart(data: SliceDatum[], cutout: string | number = '72%'): ChartConfiguration<'doughnut'> { return build(data, cutout); }
 export function pieChart(data: SliceDatum[]): ChartConfiguration<'doughnut'> { return build(data, 0); }
