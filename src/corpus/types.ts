@@ -8,6 +8,7 @@ export type ChartSpec =
   | { engine: 'echarts'; factory: string; args: unknown[]; needsMap?: string };
 export interface CorpusEntry {
   id: string; title: string; family: Family; secondaryFamilies?: Family[];
+  // must equal spec.engine — enforced by corpus.test.ts
   engine: Engine; chartType: string; variant?: string;
   whenToUse: string; description: string; tags: string[];
   runtimes: Runtime[]; features: string[]; sampleData: unknown; spec: ChartSpec;

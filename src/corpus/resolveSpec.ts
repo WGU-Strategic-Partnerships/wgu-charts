@@ -7,6 +7,7 @@ import { scoreTableModel, renderScoreTable } from '../render/score-table';
 import * as echartsFactories from '../echarts';
 import type { ChartSpec } from './types';
 
+// SSR-safe subset of adapters/vanilla/index.ts RENDER_MODELS (no css/styleId — corpus never injects DOM)
 const RM: Record<string, { build: (d: any, o?: any) => any; render: (m: any) => string }> = {
   funnel: { build: funnelModel, render: renderFunnel },
   gauge: { build: gaugeModel, render: renderGauge },
@@ -31,6 +32,6 @@ export function resolveSpec(spec: ChartSpec): Resolved {
     return { kind: 'render-model', value: model, html: rm.render(model) };
   }
   const fn = (echartsFactories as any)[spec.factory];
-  if (typeof fn !== 'function') throw new Error('corpus: unknown echarts factory "' + spec.factory + '"');
+  if (typeof fn !== 'function' || !spec.factory.endsWith('Option')) throw new Error('corpus: unknown echarts factory "' + spec.factory + '"');
   return { kind: 'echarts', value: fn(...(spec.args as any[])) };
 }

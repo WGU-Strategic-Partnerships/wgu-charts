@@ -25,5 +25,8 @@ export const byEngine = (eng: CorpusEntry['engine']) => corpus.filter(e => e.eng
 export const byFeature = (feat: string) => corpus.filter(e => e.features.includes(feat));
 export function search(q: string): CorpusEntry[] {
   const s = q.toLowerCase();
-  return corpus.filter(e => e.title.toLowerCase().includes(s) || e.chartType.toLowerCase().includes(s) || e.tags.some(t => t.toLowerCase().includes(s)));
+  return corpus.filter(e =>
+    e.title.toLowerCase().includes(s) || e.chartType.toLowerCase().includes(s) ||
+    e.description.toLowerCase().includes(s) || e.whenToUse.toLowerCase().includes(s) ||
+    e.tags.some(t => t.toLowerCase().includes(s)));
 }
