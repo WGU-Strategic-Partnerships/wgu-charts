@@ -25,8 +25,11 @@ var WGUCharts = (() => {
     applyData: () => applyData,
     applyFilters: () => applyFilters,
     barChart: () => barChart,
+    barOption: () => barOption,
     boxplotChart: () => boxplotChart,
+    boxplotOption: () => boxplotOption,
     bubbleChart: () => bubbleChart,
+    calendarHeatmapOption: () => calendarHeatmapOption,
     candlestickChart: () => candlestickChart,
     comboChart: () => comboChart,
     createTheme: () => createTheme,
@@ -45,19 +48,26 @@ var WGUCharts = (() => {
     heatmapOption: () => heatmapOption,
     hitTest: () => hitTest,
     lineChart: () => lineChart,
+    lineOption: () => lineOption,
     mount: () => mount,
     pBarLabels: () => pBarLabels,
     pCrosshair: () => pCrosshair,
     pPointLabels: () => pPointLabels,
+    parallelOption: () => parallelOption,
     pieChart: () => pieChart,
+    pieOption: () => pieOption,
     polarChart: () => polarChart,
     radarChart: () => radarChart,
+    radialBarOption: () => radialBarOption,
     registerPlugin: () => registerPlugin,
     registerWguEchartsTheme: () => registerWguEchartsTheme,
     registerWguPlugins: () => registerWguPlugins,
     sankeyChart: () => sankeyChart,
     sankeyOption: () => sankeyOption,
     scatterChart: () => scatterChart,
+    scatterOption: () => scatterOption,
+    sunburstOption: () => sunburstOption,
+    themeRiverOption: () => themeRiverOption,
     treemapChart: () => treemapChart,
     treemapOption: () => treemapOption,
     wguEchartsTheme: () => wguEchartsTheme,
@@ -527,8 +537,9 @@ var WGUCharts = (() => {
   }
 
   // src/charts/scatter.ts
-  function scatterChart(series) {
+  function scatterChart(series, opts) {
     const seq = wguTheme.colors.sequence;
+    const showLine = opts?.showLine ?? false;
     return {
       type: "scatter",
       data: { datasets: (Array.isArray(series) ? series : []).map((s, i) => ({
@@ -536,7 +547,8 @@ var WGUCharts = (() => {
         data: cloneArr(s.points),
         backgroundColor: seq[i % seq.length],
         pointRadius: 5,
-        pointHoverRadius: 7
+        pointHoverRadius: 7,
+        ...showLine ? { showLine: true, tension: 0.3, borderColor: seq[i % seq.length] } : {}
       })) },
       options: {
         responsive: true,
@@ -1832,7 +1844,7 @@ var WGUCharts = (() => {
       case "radar":
         return radarChart(spec.labels || [], spec.data);
       case "scatter":
-        return scatterChart(spec.data);
+        return scatterChart(spec.data, spec.opts);
       case "bubble":
         return bubbleChart(spec.data);
       case "groupedBar":
@@ -2089,6 +2101,141 @@ var WGUCharts = (() => {
         },
         data: [{ value: opts.value, name: opts.name || "" }]
       }]
+    };
+  }
+
+  // src/echarts/bar.ts
+  function barOption(labels, series, opts = {}) {
+    const cat = { type: "category", data: cloneArr(labels) };
+    const val = { type: "value" };
+    return {
+      tooltip: { trigger: "axis" },
+      legend: series.length > 1 ? { bottom: 0 } : void 0,
+      xAxis: opts.horizontal ? val : cat,
+      yAxis: opts.horizontal ? cat : val,
+      series: (Array.isArray(series) ? series : []).map((s) => ({
+        name: s.label,
+        type: "bar",
+        stack: opts.stacked ? "total" : void 0,
+        data: cloneArr(s.data),
+        itemStyle: { borderRadius: opts.horizontal ? [0, 6, 6, 0] : [6, 6, 0, 0] }
+      }))
+    };
+  }
+
+  // src/echarts/line.ts
+  function lineOption(labels, series, opts = {}) {
+    return {
+      tooltip: { trigger: "axis" },
+      legend: series.length > 1 ? { bottom: 0 } : void 0,
+      xAxis: { type: "category", boundaryGap: false, data: cloneArr(labels) },
+      yAxis: { type: "value" },
+      series: (Array.isArray(series) ? series : []).map((s) => ({
+        name: s.label,
+        type: "line",
+        smooth: opts.smooth !== false,
+        data: cloneArr(s.data),
+        stack: opts.stacked ? "total" : void 0,
+        areaStyle: opts.area ? {} : void 0
+      }))
+    };
+  }
+
+  // src/echarts/pie.ts
+  function pieOption(data, opts = {}) {
+    return {
+      tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+      legend: { bottom: 0 },
+      series: [{
+        type: "pie",
+        radius: opts.donut ? ["55%", "75%"] : "70%",
+        data: cloneArr(data),
+        itemStyle: { borderColor: "#fff", borderWidth: 2 },
+        label: { color: "#264468" }
+      }]
+    };
+  }
+
+  // src/echarts/scatter.ts
+  function scatterOption(series) {
+    return {
+      tooltip: { trigger: "item" },
+      legend: series.length > 1 ? { bottom: 0 } : void 0,
+      xAxis: { type: "value" },
+      yAxis: { type: "value" },
+      series: (Array.isArray(series) ? series : []).map((s) => ({ name: s.label, type: "scatter", symbolSize: 12, data: cloneArr(s.points) }))
+    };
+  }
+
+  // src/echarts/sunburst.ts
+  function sunburstOption(data) {
+    return {
+      tooltip: {},
+      color: cloneArr(wguTheme.colors.sequence),
+      series: [{
+        type: "sunburst",
+        radius: [0, "90%"],
+        data: cloneArr(data),
+        label: { color: "#fff" },
+        itemStyle: { borderColor: "#fff", borderWidth: 2 }
+      }]
+    };
+  }
+
+  // src/echarts/radial-bar.ts
+  function radialBarOption(labels, values) {
+    return {
+      polar: { radius: [20, "80%"] },
+      angleAxis: { max: Math.max(1, ...values) * 1.1, startAngle: 75 },
+      radiusAxis: { type: "category", data: cloneArr(labels) },
+      tooltip: {},
+      series: [{ type: "bar", data: cloneArr(values), coordinateSystem: "polar", itemStyle: { borderRadius: 4 } }]
+    };
+  }
+
+  // src/echarts/boxplot.ts
+  function boxplotOption(labels, samples) {
+    const box = (arr) => {
+      const s = [...arr].sort((a, b) => a - b);
+      const q = (p) => s[Math.floor((s.length - 1) * p)];
+      return [s[0], q(0.25), q(0.5), q(0.75), s[s.length - 1]];
+    };
+    return {
+      tooltip: { trigger: "item" },
+      xAxis: { type: "category", data: cloneArr(labels) },
+      yAxis: { type: "value" },
+      series: [{ type: "boxplot", data: (Array.isArray(samples) ? samples : []).map(box) }]
+    };
+  }
+
+  // src/echarts/parallel.ts
+  function parallelOption(dims, rows) {
+    return {
+      parallel: {},
+      parallelAxis: (Array.isArray(dims) ? dims : []).map((d, i) => ({ dim: i, name: d })),
+      tooltip: {},
+      series: [{ type: "parallel", data: (Array.isArray(rows) ? rows : []).map((r) => ({ name: r.name, value: cloneArr(r.values) })) }]
+    };
+  }
+
+  // src/echarts/theme-river.ts
+  function themeRiverOption(data) {
+    return {
+      tooltip: { trigger: "axis" },
+      singleAxis: { type: "time" },
+      color: cloneArr(wguTheme.colors.sequence),
+      series: [{ type: "themeRiver", data: cloneArr(data) }]
+    };
+  }
+
+  // src/echarts/calendar.ts
+  function calendarHeatmapOption(year, data, opts = {}) {
+    const max = opts.max ?? Math.max(1, ...data.map((d) => d[1]));
+    return {
+      tooltip: { position: "top" },
+      visualMap: { min: 0, max, orient: "horizontal", left: "center", bottom: 0, inRange: { color: wguHeatRamp } },
+      calendar: { range: String(year), cellSize: ["auto", 16] },
+      series: [{ type: "heatmap", coordinateSystem: "calendar", data: cloneArr(data) }]
     };
   }
 
