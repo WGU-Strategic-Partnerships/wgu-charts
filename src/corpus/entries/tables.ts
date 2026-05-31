@@ -61,4 +61,50 @@ export const tables: CorpusEntry[] = [
       },
     },
   },
+  {
+    id: 'tables-data-table',
+    title: 'Data table (plain)',
+    family: 'tables',
+    engine: 'render-model',
+    chartType: 'scoreTable',
+    whenToUse: 'Present structured partner or program data in a clean, unstyled tabular layout when no banding or color-coding is needed — pure data readability.',
+    description: 'Plain scoreTable with no bandColumn or bands; columns and rows render without cell-background color, yielding a minimal WGU-branded data table.',
+    tags: ['table', 'plain', 'data', 'structured'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['table'],
+    sampleData: {
+      columns: [
+        { key: 'program', label: 'Program' },
+        { key: 'college', label: 'College' },
+        { key: 'enrolled', label: 'Enrolled', align: 'right' },
+        { key: 'completionRate', label: 'Completion %', align: 'right' },
+      ],
+      rows: [
+        { program: 'MBA', college: 'Business', enrolled: 4200, completionRate: '78%' },
+        { program: 'BSCS', college: 'Technology', enrolled: 3800, completionRate: '74%' },
+        { program: 'BSN', college: 'Health', enrolled: 3100, completionRate: '82%' },
+        { program: 'TEP', college: 'Education', enrolled: 2400, completionRate: '80%' },
+        { program: 'BSIT', college: 'Technology', enrolled: 1950, completionRate: '72%' },
+      ],
+    },
+    spec: {
+      engine: 'render-model',
+      type: 'scoreTable',
+      data: {
+        columns: [
+          { key: 'program', label: 'Program' },
+          { key: 'college', label: 'College' },
+          { key: 'enrolled', label: 'Enrolled', align: 'right' },
+          { key: 'completionRate', label: 'Completion %', align: 'right' },
+        ],
+        rows: [
+          { program: 'MBA', college: 'Business', enrolled: 4200, completionRate: '78%' },
+          { program: 'BSCS', college: 'Technology', enrolled: 3800, completionRate: '74%' },
+          { program: 'BSN', college: 'Health', enrolled: 3100, completionRate: '82%' },
+          { program: 'TEP', college: 'Education', enrolled: 2400, completionRate: '80%' },
+          { program: 'BSIT', college: 'Technology', enrolled: 1950, completionRate: '72%' },
+        ],
+      },
+    },
+  },
 ];

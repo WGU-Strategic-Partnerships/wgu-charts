@@ -234,6 +234,88 @@ export const magnitude: CorpusEntry[] = [
     },
   },
   {
+    id: 'magnitude-bar-grouped-echarts',
+    title: 'Grouped bar (ECharts)',
+    family: 'magnitude',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'grouped',
+    whenToUse: 'Compare multiple series side-by-side with ECharts when legend-driven series toggling, axis zoom, or richer tooltip is needed.',
+    description: 'Multi-series grouped bar using barOption without stacking; each series cluster appears beside the others per category, legend at bottom.',
+    tags: ['categorical', 'multi-series', 'grouped', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['multi-series'],
+    sampleData: {
+      labels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      series: [
+        { label: 'FY2023', data: [4200, 3800, 2900, 2100] },
+        { label: 'FY2024', data: [4650, 4200, 3150, 2380] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'barOption',
+      args: [
+        ['Business', 'Technology', 'Education', 'Healthcare'],
+        [
+          { label: 'FY2023', data: [4200, 3800, 2900, 2100] },
+          { label: 'FY2024', data: [4650, 4200, 3150, 2380] },
+        ],
+      ],
+    },
+  },
+  {
+    id: 'magnitude-radar-echarts',
+    title: 'Radar / spider chart (ECharts)',
+    family: 'magnitude',
+    engine: 'echarts',
+    chartType: 'radar',
+    whenToUse: 'Compare multiple quantitative variables for one or more entities with ECharts when filled-polygon interaction or programmatic indicator max values are needed.',
+    description: 'ECharts radar chart with radar.indicator defining each axis name and max; series type:radar traces each entity as a filled polygon. WGU-themed colors.',
+    tags: ['multi-axis', 'multi-series', 'radial', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['multi-series', 'multi-axis', 'radial'],
+    sampleData: {
+      indicators: [
+        { name: 'Engagement', max: 100 },
+        { name: 'Completion', max: 100 },
+        { name: 'Satisfaction', max: 100 },
+        { name: 'Retention', max: 100 },
+        { name: 'Outcomes', max: 100 },
+      ],
+      series: [
+        { name: 'Business College', values: [85, 72, 90, 80, 88] },
+        { name: 'Tech College', values: [78, 80, 84, 75, 92] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: {},
+        legend: { bottom: 0 },
+        color: ['#0070F0', '#46B1EF'],
+        radar: {
+          indicator: [
+            { name: 'Engagement', max: 100 },
+            { name: 'Completion', max: 100 },
+            { name: 'Satisfaction', max: 100 },
+            { name: 'Retention', max: 100 },
+            { name: 'Outcomes', max: 100 },
+          ],
+        },
+        series: [
+          {
+            type: 'radar',
+            data: [
+              { name: 'Business College', value: [85, 72, 90, 80, 88], areaStyle: { opacity: 0.2 } },
+              { name: 'Tech College', value: [78, 80, 84, 75, 92], areaStyle: { opacity: 0.2 } },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'magnitude-radar',
     title: 'Radar / spider chart',
     family: 'magnitude',

@@ -252,6 +252,63 @@ export const partToWhole: CorpusEntry[] = [
     },
   },
   {
+    id: 'ptw-nested-donut',
+    title: 'Nested donut (dual-ring)',
+    family: 'part-to-whole',
+    engine: 'echarts',
+    chartType: 'pie',
+    variant: 'nested-donut',
+    whenToUse: 'Show two levels of a part-to-whole hierarchy simultaneously — outer ring for sub-categories, inner ring for parent categories — without needing a full sunburst.',
+    description: 'Two ECharts pie series at different inner/outer radii create concentric rings; the inner ring shows top-level college share, the outer ring shows program-level share.',
+    tags: ['proportional', 'hierarchical', 'ring', 'donut', 'nested', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['nested', 'hierarchical'],
+    sampleData: {
+      inner: [
+        { name: 'Business', value: 910 },
+        { name: 'Technology', value: 790 },
+        { name: 'Education', value: 450 },
+      ],
+      outer: [
+        { name: 'MBA', value: 420 }, { name: 'BSBA', value: 310 }, { name: 'MSML', value: 180 },
+        { name: 'BSCS', value: 380 }, { name: 'BSIT', value: 270 }, { name: 'MSCSIA', value: 140 },
+        { name: 'TEP', value: 290 }, { name: 'MAED', value: 160 },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        legend: { bottom: 0 },
+        color: ['#0070F0', '#46B1EF', '#002855', '#97E152', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444'],
+        series: [
+          {
+            type: 'pie',
+            radius: ['20%', '45%'],
+            label: { position: 'inner', fontSize: 11, color: '#fff' },
+            itemStyle: { borderColor: '#fff', borderWidth: 3 },
+            data: [
+              { name: 'Business', value: 910 },
+              { name: 'Technology', value: 790 },
+              { name: 'Education', value: 450 },
+            ],
+          },
+          {
+            type: 'pie',
+            radius: ['50%', '72%'],
+            label: { formatter: '{b} ({d}%)', fontSize: 11 },
+            itemStyle: { borderColor: '#fff', borderWidth: 2 },
+            data: [
+              { name: 'MBA', value: 420 }, { name: 'BSBA', value: 310 }, { name: 'MSML', value: 180 },
+              { name: 'BSCS', value: 380 }, { name: 'BSIT', value: 270 }, { name: 'MSCSIA', value: 140 },
+              { name: 'TEP', value: 290 }, { name: 'MAED', value: 160 },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'ptw-stacked-100',
     title: 'Stacked 100% bar',
     family: 'part-to-whole',
