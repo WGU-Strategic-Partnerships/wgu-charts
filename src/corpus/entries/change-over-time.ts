@@ -272,4 +272,192 @@ export const changeOverTime: CorpusEntry[] = [
       ],
     },
   },
+  // ── Phase B feature-showcase entries ──────────────────────────────────────
+
+  {
+    id: 'cot-line-datazoom',
+    title: 'Line chart with dataZoom (pan & zoom)',
+    family: 'change-over-time',
+    engine: 'echarts',
+    chartType: 'line',
+    variant: 'datazoom',
+    whenToUse: 'Explore a long time series (12+ months) where the user needs to pinch-zoom or drag a slider to focus on a sub-period without losing overall context.',
+    description: 'A 24-month enrollment trend line with both an inside (mouse-wheel) and a slider dataZoom component, letting users pan and zoom interactively across the full range.',
+    tags: ['time-series', 'single-series', 'trend', 'interactive', 'datazoom', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['dataZoom', 'interactive', 'zoom-pan'],
+    sampleData: {
+      months: ['Jan 24','Feb 24','Mar 24','Apr 24','May 24','Jun 24','Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24',
+               'Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25'],
+      values: [1820,1945,2110,2050,2280,2430,2190,2350,2620,2510,2380,2640,
+               2720,2890,3010,2950,3180,3340,3100,3260,3490,3380,3210,3550],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+        xAxis: {
+          type: 'category',
+          data: ['Jan 24','Feb 24','Mar 24','Apr 24','May 24','Jun 24','Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24',
+                 'Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25'],
+          boundaryGap: false,
+        },
+        yAxis: { type: 'value', name: 'Enrollments' },
+        dataZoom: [
+          { type: 'inside', start: 0, end: 50 },
+          { type: 'slider',  start: 0, end: 50, bottom: 10 },
+        ],
+        series: [{
+          name: 'Enrollments',
+          type: 'line',
+          smooth: true,
+          data: [1820,1945,2110,2050,2280,2430,2190,2350,2620,2510,2380,2640,
+                 2720,2890,3010,2950,3180,3340,3100,3260,3490,3380,3210,3550],
+          areaStyle: { opacity: 0.12 },
+          lineStyle: { width: 2, color: '#0070F0' },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'cot-line-markline-markarea',
+    title: 'Line with threshold markLine + period markArea',
+    family: 'change-over-time',
+    engine: 'echarts',
+    chartType: 'line',
+    variant: 'annotated',
+    whenToUse: 'Annotate a trend line with a horizontal target threshold and a shaded band highlighting a notable period (e.g. a pilot program window or an academic term).',
+    description: 'A 12-month completion-rate line enriched with a dashed markLine at the 80% target and a semi-transparent markArea spanning the Q3 intervention period. Annotations reveal context directly on the chart.',
+    tags: ['time-series', 'single-series', 'trend', 'annotations', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['annotations', 'threshold', 'markline'],
+    sampleData: {
+      months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      completionRate: [74, 76, 75, 78, 79, 77, 82, 85, 83, 86, 87, 88],
+      target: 80,
+      interventionPeriod: ['Jul', 'Sep'],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0'],
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], boundaryGap: false },
+        yAxis: { type: 'value', name: 'Completion Rate (%)', min: 60, max: 100 },
+        series: [{
+          name: 'Completion Rate',
+          type: 'line',
+          smooth: true,
+          data: [74, 76, 75, 78, 79, 77, 82, 85, 83, 86, 87, 88],
+          lineStyle: { width: 2, color: '#0070F0' },
+          markLine: {
+            silent: true,
+            lineStyle: { color: '#97E152', type: 'dashed', width: 2 },
+            label: { formatter: 'Target 80%', position: 'end' },
+            data: [{ yAxis: 80 }],
+          },
+          markArea: {
+            silent: true,
+            itemStyle: { color: 'rgba(70,177,239,0.12)' },
+            label: { position: 'top', color: '#264468', fontSize: 11 },
+            data: [[{ name: 'Intervention Period', xAxis: 'Jul' }, { xAxis: 'Sep' }]],
+          },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'cot-line-large-data',
+    title: 'High-density line (LTTB sampling)',
+    family: 'change-over-time',
+    engine: 'echarts',
+    chartType: 'line',
+    variant: 'large-data',
+    whenToUse: 'Render thousands of data points (e.g. hourly or minute-level sensor readings) without degrading frame rate; ECharts LTTB sampling preserves visual shape while skipping redundant points.',
+    description: 'A 1,500-point synthetic sine-wave signal (simulating a daily login event stream) rendered with large:true and sampling:lttb; the browser renders the full dataset while ECharts adaptively downsamples for smooth display.',
+    tags: ['time-series', 'single-series', 'large-data', 'performance', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['large-data', 'performance'],
+    sampleData: { points: 1500, note: 'Sine + linear trend; 1500 deterministic points in spec.option.series[0].data' },
+    spec: {
+      engine: 'echarts',
+      option: (() => {
+        const data: number[] = [];
+        for (let i = 0; i < 1500; i++) {
+          data.push(
+            Math.round(
+              1500 +
+              500 * Math.sin((i / 1500) * 2 * Math.PI * 6) +
+              (i / 1500) * 800 +
+              30 * Math.sin((i / 1500) * 2 * Math.PI * 37)
+            )
+          );
+        }
+        return {
+          color: ['#0070F0'],
+          tooltip: { trigger: 'axis', axisPointer: { type: 'line' } },
+          xAxis: { type: 'category', boundaryGap: false, data: Array.from({ length: 1500 }, (_, i) => i) },
+          yAxis: { type: 'value', name: 'Events' },
+          dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 10 }],
+          series: [{
+            name: 'Login Events',
+            type: 'line',
+            large: true,
+            sampling: 'lttb',
+            showSymbol: false,
+            lineStyle: { color: '#0070F0', width: 1.5 },
+            areaStyle: { opacity: 0.08 },
+            data,
+          }],
+        };
+      })(),
+    },
+  },
+
+  {
+    id: 'change-over-time-stacked-area',
+    title: 'Stacked area chart',
+    family: 'change-over-time',
+    secondaryFamilies: ['part-to-whole'],
+    engine: 'echarts',
+    chartType: 'line',
+    variant: 'stacked-area',
+    whenToUse: 'Show how the combined total and each component series evolves over time — e.g. enrollment mix across colleges where both total growth and shifting share matter.',
+    description: 'Multiple line series with stack:\'total\' and areaStyle active; the filled bands accumulate to the overall total at each time point, making both composition and magnitude visible.',
+    tags: ['time-series', 'multi-series', 'stacked', 'area', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['stacked', 'area'],
+    sampleData: {
+      months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      series: [
+        { label: 'Business', data: [820,860,910,880,950,1010,940,980,1060,1030,990,1080] },
+        { label: 'Technology', data: [610,640,690,670,720,760,710,745,800,780,760,820] },
+        { label: 'Education', data: [390,410,430,420,450,470,445,460,490,480,465,500] },
+        { label: 'Healthcare', data: [280,295,315,305,330,350,320,340,365,355,340,375] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF', '#97E152', '#002855'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+        legend: { bottom: 0 },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        },
+        yAxis: { type: 'value', name: 'Enrollments' },
+        series: [
+          { name: 'Business',   type: 'line', stack: 'total', smooth: true, areaStyle: {}, data: [820,860,910,880,950,1010,940,980,1060,1030,990,1080] },
+          { name: 'Technology', type: 'line', stack: 'total', smooth: true, areaStyle: {}, data: [610,640,690,670,720,760,710,745,800,780,760,820] },
+          { name: 'Education',  type: 'line', stack: 'total', smooth: true, areaStyle: {}, data: [390,410,430,420,450,470,445,460,490,480,465,500] },
+          { name: 'Healthcare', type: 'line', stack: 'total', smooth: true, areaStyle: {}, data: [280,295,315,305,330,350,320,340,365,355,340,375] },
+        ],
+      },
+    },
+  },
 ];

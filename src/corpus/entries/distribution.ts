@@ -179,4 +179,59 @@ export const distribution: CorpusEntry[] = [
       ],
     },
   },
+  // ── Phase B feature-showcase entries ──────────────────────────────────────
+
+  {
+    id: 'distribution-heatmap-visualmap',
+    title: 'Heatmap with continuous visualMap',
+    family: 'distribution',
+    engine: 'echarts',
+    chartType: 'heatmap',
+    variant: 'visualmap',
+    whenToUse: 'Show a cross-tab intensity grid where the color scale communicates a continuous quantity (e.g. average score) and the visualMap legend allows interactive range filtering to focus on hot-spots.',
+    description: 'ECharts heatmap with categorical x/y axes and a continuous visualMap using the WGU blue ramp (EEF6F9 → 46B1EF → 0070F0 → 002855). The calculable visualMap handle lets users interactively filter by value.',
+    tags: ['heatmap', 'distribution', 'frequency', 'grid', 'interactive', 'visualmap', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['visualMap', 'heatmap'],
+    sampleData: {
+      xLabels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      yLabels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      data: [
+        [0,0,74],[1,0,81],[2,0,79],[3,0,85],
+        [0,1,68],[1,1,75],[2,1,80],[3,1,83],
+        [0,2,71],[1,2,78],[2,2,76],[3,2,82],
+        [0,3,65],[1,3,72],[2,3,77],[3,3,80],
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: { position: 'top', formatter: (p: any) => `${p.name}: ${p.data[2]}%` },
+        grid: { top: '10%', bottom: '20%' },
+        xAxis: { type: 'category', data: ['Q1','Q2','Q3','Q4'], splitArea: { show: true } },
+        yAxis: { type: 'category', data: ['Business','Technology','Education','Healthcare'], splitArea: { show: true } },
+        visualMap: {
+          min: 60,
+          max: 90,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '5%',
+          inRange: { color: ['#EEF6F9', '#46B1EF', '#0070F0', '#002855'] },
+        },
+        series: [{
+          name: 'Completion Rate',
+          type: 'heatmap',
+          data: [
+            [0,0,74],[1,0,81],[2,0,79],[3,0,85],
+            [0,1,68],[1,1,75],[2,1,80],[3,1,83],
+            [0,2,71],[1,2,78],[2,2,76],[3,2,82],
+            [0,3,65],[1,3,72],[2,3,77],[3,3,80],
+          ],
+          label: { show: true },
+          emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' } },
+        }],
+      },
+    },
+  },
 ];

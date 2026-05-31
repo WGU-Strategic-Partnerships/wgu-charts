@@ -246,4 +246,153 @@ export const correlation: CorpusEntry[] = [
       },
     },
   },
+  // ── Phase B feature-showcase entries ──────────────────────────────────────
+
+  {
+    id: 'correlation-scatter-brush',
+    title: 'Scatter with brush selection',
+    family: 'correlation',
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'brush',
+    whenToUse: 'Let users lasso or rectangle-select a subset of data points to highlight outliers, filter a cohort, or trigger a downstream action — particularly useful in dashboards where scatter selection drives a detail panel.',
+    description: 'Multi-series scatter with an activated ECharts brush component (rectangle, polygon, and clear modes) plus a toolbox brush button group. Selected points are highlighted; un-selected points fade.',
+    tags: ['correlation', 'bivariate', 'interactive', 'brush', 'select', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['brush', 'interactive', 'select'],
+    sampleData: [
+      { label: 'Business', points: [[320,82],[410,85],[275,78],[500,88],[380,84],[220,74],[460,89],[340,81]] },
+      { label: 'Technology', points: [[290,80],[360,83],[430,87],[190,71],[470,90],[310,81],[395,86],[250,76]] },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF'],
+        tooltip: { trigger: 'item', formatter: (p: any) => `${p.seriesName}<br/>Enrollment: ${p.data[0]}<br/>Completion: ${p.data[1]}%` },
+        legend: { bottom: 0 },
+        brush: {
+          toolbox: ['rect', 'polygon', 'clear'],
+          xAxisIndex: 0,
+        },
+        toolbox: {
+          feature: {
+            brush: { type: ['rect', 'polygon', 'clear'] },
+          },
+        },
+        xAxis: { name: 'Enrollment', type: 'value', scale: true },
+        yAxis: { name: 'Completion Rate (%)', type: 'value', min: 60, max: 100 },
+        series: [
+          {
+            name: 'Business',
+            type: 'scatter',
+            symbolSize: 14,
+            data: [[320,82],[410,85],[275,78],[500,88],[380,84],[220,74],[460,89],[340,81]],
+            itemStyle: { color: '#0070F0' },
+          },
+          {
+            name: 'Technology',
+            type: 'scatter',
+            symbolSize: 14,
+            data: [[290,80],[360,83],[430,87],[190,71],[470,90],[310,81],[395,86],[250,76]],
+            itemStyle: { color: '#46B1EF' },
+          },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'correlation-scatter-regression',
+    title: 'Scatter with trend line (markLine regression)',
+    family: 'correlation',
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'regression',
+    whenToUse: 'Overlay a visual trend line on a scatter plot to communicate the general direction of the relationship without requiring a separate regression model; best for quick analytical reads.',
+    description: 'Single-series scatter with a two-point markLine encoding a manually computed linear regression, annotated with the slope direction. The dashed trend line provides a visual summary of the correlation.',
+    tags: ['correlation', 'bivariate', 'trendline', 'annotations', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['trendline', 'annotations'],
+    sampleData: [
+      { enrollment: 190, completion: 71 }, { enrollment: 220, completion: 74 },
+      { enrollment: 275, completion: 78 }, { enrollment: 310, completion: 81 },
+      { enrollment: 340, completion: 81 }, { enrollment: 380, completion: 84 },
+      { enrollment: 410, completion: 85 }, { enrollment: 430, completion: 87 },
+      { enrollment: 460, completion: 89 }, { enrollment: 500, completion: 88 },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0'],
+        tooltip: { trigger: 'item', formatter: (p: any) => `Enrollment: ${p.data[0]}<br/>Completion: ${p.data[1]}%` },
+        xAxis: { name: 'Enrollment', type: 'value', scale: true },
+        yAxis: { name: 'Completion Rate (%)', type: 'value', min: 60, max: 100 },
+        series: [{
+          name: 'Programs',
+          type: 'scatter',
+          symbolSize: 14,
+          data: [[190,71],[220,74],[275,78],[310,81],[340,81],[380,84],[410,85],[430,87],[460,89],[500,88]],
+          itemStyle: { color: '#0070F0' },
+          markLine: {
+            silent: true,
+            lineStyle: { color: '#002855', type: 'dashed', width: 2 },
+            label: { formatter: 'Trend', position: 'end', color: '#002855' },
+            data: [[{ coord: [190, 71.5] }, { coord: [500, 88.5] }]],
+          },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'distribution-scatter-visualmap',
+    title: 'Bubble scatter with visualMap (3-D encoding)',
+    family: 'correlation',
+    secondaryFamilies: ['distribution'],
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'visualmap-bubble',
+    whenToUse: 'Encode a third quantitative dimension (e.g. revenue) as both bubble size and color simultaneously; the continuous visualMap component acts as a legend and allows interactive filtering by value range.',
+    description: 'ECharts scatter where each point is [enrollment, completion%, revenue]; a continuous visualMap driven by dimension 2 maps revenue to both symbol size (via symbolSize callback) and color (WGU ramp), adding a fourth visual channel.',
+    tags: ['correlation', 'trivariate', 'bubble', 'interactive', 'visualmap', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['visualMap', 'bubble'],
+    sampleData: [
+      [320,82,480], [410,85,620], [275,78,310], [500,88,890],
+      [380,84,550], [220,74,210], [460,89,740], [340,81,430],
+      [290,80,370], [430,87,680], [190,71,160], [470,90,810],
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: {
+          trigger: 'item',
+          formatter: (p: any) => `Enrollment: ${p.data[0]}<br/>Completion: ${p.data[1]}%<br/>Revenue: $${p.data[2]}K`,
+        },
+        visualMap: {
+          show: true,
+          dimension: 2,
+          min: 160,
+          max: 890,
+          inRange: { color: ['#EEF6F9', '#46B1EF', '#0070F0', '#002855'] },
+          text: ['High Revenue', 'Low'],
+          calculable: true,
+          right: 10,
+          top: 'center',
+        },
+        xAxis: { name: 'Enrollment', type: 'value', scale: true },
+        yAxis: { name: 'Completion Rate (%)', type: 'value', min: 60, max: 100 },
+        series: [{
+          name: 'Programs',
+          type: 'scatter',
+          symbolSize: (val: number[]) => Math.sqrt(val[2]) * 1.8,
+          data: [
+            [320,82,480],[410,85,620],[275,78,310],[500,88,890],
+            [380,84,550],[220,74,210],[460,89,740],[340,81,430],
+            [290,80,370],[430,87,680],[190,71,160],[470,90,810],
+          ],
+        }],
+      },
+    },
+  },
 ];

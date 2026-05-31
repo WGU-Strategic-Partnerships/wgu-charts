@@ -340,4 +340,65 @@ export const partToWhole: CorpusEntry[] = [
       opts: { stacked: true },
     },
   },
+  // ── Phase B feature-showcase entries ──────────────────────────────────────
+
+  {
+    id: 'part-to-whole-sunburst-drilldown',
+    title: 'Sunburst with click-to-drill interaction',
+    family: 'part-to-whole',
+    engine: 'echarts',
+    chartType: 'sunburst',
+    variant: 'drilldown',
+    whenToUse: 'Let users explore a hierarchy interactively — clicking a node zooms into that branch (rootToNode), making a dense college → program → cohort breakdown approachable without overwhelming detail upfront.',
+    description: 'ECharts sunburst with nodeClick:\'rootToNode\'; clicking any arc re-roots the chart at that node and hides sibling branches. A breadcrumb trail in the label guides orientation. WGU-branded colors.',
+    tags: ['proportional', 'hierarchical', 'radial', 'interactive', 'drilldown', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['drilldown', 'interactive'],
+    sampleData: [
+      { name: 'Business', children: [
+        { name: 'MBA', children: [{ name: 'Full-Time', value: 240 }, { name: 'Part-Time', value: 180 }] },
+        { name: 'BSBA', children: [{ name: 'Full-Time', value: 190 }, { name: 'Part-Time', value: 120 }] },
+        { name: 'MSML', value: 180 },
+      ]},
+      { name: 'Technology', children: [
+        { name: 'BSCS', children: [{ name: 'Full-Time', value: 230 }, { name: 'Part-Time', value: 150 }] },
+        { name: 'BSIT', children: [{ name: 'Full-Time', value: 160 }, { name: 'Part-Time', value: 110 }] },
+        { name: 'MSCSIA', value: 140 },
+      ]},
+      { name: 'Education', children: [
+        { name: 'TEP', value: 290 },
+        { name: 'MAED', value: 160 },
+      ]},
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF', '#002855', '#97E152', '#264468', '#8B5CF6'],
+        tooltip: { trigger: 'item' },
+        series: [{
+          type: 'sunburst',
+          nodeClick: 'rootToNode',
+          radius: ['15%', '90%'],
+          data: [
+            { name: 'Business', children: [
+              { name: 'MBA', children: [{ name: 'Full-Time', value: 240 }, { name: 'Part-Time', value: 180 }] },
+              { name: 'BSBA', children: [{ name: 'Full-Time', value: 190 }, { name: 'Part-Time', value: 120 }] },
+              { name: 'MSML', value: 180 },
+            ]},
+            { name: 'Technology', children: [
+              { name: 'BSCS', children: [{ name: 'Full-Time', value: 230 }, { name: 'Part-Time', value: 150 }] },
+              { name: 'BSIT', children: [{ name: 'Full-Time', value: 160 }, { name: 'Part-Time', value: 110 }] },
+              { name: 'MSCSIA', value: 140 },
+            ]},
+            { name: 'Education', children: [
+              { name: 'TEP', value: 290 },
+              { name: 'MAED', value: 160 },
+            ]},
+          ],
+          label: { rotate: 'radial', fontSize: 11 },
+          itemStyle: { borderColor: '#fff', borderWidth: 2 },
+        }],
+      },
+    },
+  },
 ];
