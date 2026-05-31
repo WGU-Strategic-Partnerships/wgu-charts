@@ -182,6 +182,133 @@ export const deviation: CorpusEntry[] = [
   },
 
   {
+    id: 'deviation-surplus-deficit-echarts',
+    title: 'Surplus / deficit area line (ECharts)',
+    family: 'deviation',
+    secondaryFamilies: ['change-over-time'],
+    engine: 'echarts',
+    chartType: 'line',
+    variant: 'surplus-deficit-echarts',
+    whenToUse: 'Show enrollment delta swings above and below zero in ECharts when the visualMap component is used to color the area fill green for surplus and red for deficit periods automatically.',
+    description: 'Area line with values crossing zero; a piecewise visualMap (green above zero, red below) automatically colors the fill on each side of the baseline. ECharts raw option.',
+    tags: ['diverging', 'single-series', 'time-series', 'area', 'positive-negative', 'visualmap', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['area', 'diverging', 'visualMap'],
+    sampleData: {
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+      delta: [120, -45, 85, -30, 210, -80, 160, 95],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'], boundaryGap: false },
+        yAxis: { type: 'value', name: 'Δ Enrollments' },
+        visualMap: {
+          show: false,
+          type: 'piecewise',
+          pieces: [
+            { gte: 0,  color: '#97E152' },
+            { lt:  0,  color: '#E5484D' },
+          ],
+        },
+        series: [{
+          name: 'Enrollment Delta',
+          type: 'line',
+          smooth: false,
+          data: [120, -45, 85, -30, 210, -80, 160, 95],
+          markLine: {
+            silent: true,
+            lineStyle: { color: '#264468', type: 'dashed', width: 1 },
+            data: [{ yAxis: 0 }],
+            label: { show: false },
+          },
+          areaStyle: {},
+          lineStyle: { width: 2 },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'deviation-column-stacked-net',
+    title: 'Stacked positive/negative net bar',
+    family: 'deviation',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'stacked-net',
+    whenToUse: 'Show the net outcome of positive and negative components simultaneously — gains stack above zero, losses stack below — revealing how each component drives the net result.',
+    description: 'ECharts stacked bar with two positive series stacked above zero and two negative series stacked below; a markLine at zero anchors the baseline. WGU palette differentiates gain/loss segments.',
+    tags: ['diverging', 'multi-series', 'stacked', 'positive-negative', 'net', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['stacked', 'diverging', 'multi-series'],
+    sampleData: {
+      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      gains: [
+        { label: 'New Partners', data: [320, 290, 350, 410] },
+        { label: 'Organic Growth', data: [180, 160, 200, 230] },
+      ],
+      losses: [
+        { label: 'Withdrawals', data: [-140, -190, -120, -100] },
+        { label: 'Transfers Out', data: [-60, -80, -50, -40] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF', '#E5484D', '#F59E0B'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { bottom: 0 },
+        xAxis: { type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+        yAxis: { type: 'value', name: 'Δ Enrollments' },
+        series: [
+          { name: 'New Partners',   type: 'bar', stack: 'gain', data: [320,290,350,410], itemStyle: { color: '#0070F0', borderRadius: [0,0,0,0] } },
+          { name: 'Organic Growth', type: 'bar', stack: 'gain', data: [180,160,200,230], itemStyle: { color: '#46B1EF', borderRadius: [4,4,0,0] } },
+          { name: 'Withdrawals',    type: 'bar', stack: 'loss', data: [-140,-190,-120,-100], itemStyle: { color: '#E5484D', borderRadius: [0,0,4,4] } },
+          { name: 'Transfers Out',  type: 'bar', stack: 'loss', data: [-60,-80,-50,-40], itemStyle: { color: '#F59E0B', borderRadius: [0,0,0,0] } },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'deviation-bar-horizontal-likert',
+    title: 'Horizontal Likert diverging bar',
+    family: 'deviation',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'likert',
+    whenToUse: 'Display survey agreement data on a 5-point Likert scale where strongly-agree and agree stack right of center, strongly-disagree and disagree stack left — instantly communicating net sentiment.',
+    description: 'ECharts stacked horizontal bar with positive and negative stacks; the neutral response is omitted or split. Per-item colors progress from red (strongly disagree) through orange/amber to blue/green (agree).',
+    tags: ['diverging', 'multi-series', 'stacked', 'horizontal', 'likert', 'survey', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['stacked', 'diverging', 'multi-series'],
+    sampleData: {
+      questions: ['Course quality', 'Mentor support', 'Career outcomes', 'Flexibility'],
+      stronglyDisagree: [-8, -12, -5, -3],
+      disagree: [-15, -18, -12, -8],
+      agree: [35, 28, 40, 42],
+      stronglyAgree: [42, 32, 43, 47],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#E5484D', '#F59E0B', '#46B1EF', '#0070F0'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { bottom: 0, data: ['Strongly Disagree', 'Disagree', 'Agree', 'Strongly Agree'] },
+        xAxis: { type: 'value', name: '% Respondents', min: -60, max: 100 },
+        yAxis: { type: 'category', data: ['Flexibility', 'Career outcomes', 'Mentor support', 'Course quality'] },
+        series: [
+          { name: 'Strongly Disagree', type: 'bar', stack: 'neg', data: [-3,-5,-12,-8], itemStyle: { color: '#E5484D' } },
+          { name: 'Disagree', type: 'bar', stack: 'neg', data: [-8,-12,-18,-15], itemStyle: { color: '#F59E0B' } },
+          { name: 'Agree', type: 'bar', stack: 'pos', data: [42,40,28,35], itemStyle: { color: '#46B1EF' } },
+          { name: 'Strongly Agree', type: 'bar', stack: 'pos', data: [47,43,32,42], itemStyle: { color: '#0070F0' } },
+        ],
+      },
+    },
+  },
+
+  {
     id: 'deviation-area-surplus-deficit',
     title: 'Surplus / deficit area line',
     family: 'deviation',

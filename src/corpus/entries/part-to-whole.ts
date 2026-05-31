@@ -500,6 +500,87 @@ export const partToWhole: CorpusEntry[] = [
   },
 
   {
+    id: 'ptw-pie-label-lines',
+    title: 'Pie chart with callout label lines',
+    family: 'part-to-whole',
+    engine: 'echarts',
+    chartType: 'pie',
+    variant: 'label-lines',
+    whenToUse: 'Display slice labels outside the pie with leader lines when slices are too narrow for inside labels — prevents text overlap and preserves slice readability for 6+ categories.',
+    description: 'ECharts pie with label.position:\'outside\' and labelLine:{ show:true, length:12 }; each label anchors to its slice with an elbow connector. WGU palette separates 6 programs.',
+    tags: ['proportional', 'categorical', 'circle', 'label-lines', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['percent', 'label-lines'],
+    sampleData: [
+      { name: 'MBA', value: 28 },
+      { name: 'BSCS', value: 22 },
+      { name: 'BSN', value: 18 },
+      { name: 'TEP', value: 14 },
+      { name: 'MSML', value: 11 },
+      { name: 'BSIT', value: 7 },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF', '#002855', '#97E152', '#264468', '#8B5CF6'],
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie',
+          radius: ['0%', '58%'],
+          label: { position: 'outside', formatter: '{b}\n{d}%', fontSize: 11 },
+          labelLine: { show: true, length: 12, length2: 8 },
+          data: [
+            { name: 'MBA',  value: 28 },
+            { name: 'BSCS', value: 22 },
+            { name: 'BSN',  value: 18 },
+            { name: 'TEP',  value: 14 },
+            { name: 'MSML', value: 11 },
+            { name: 'BSIT', value: 7 },
+          ],
+          itemStyle: { borderColor: '#fff', borderWidth: 2 },
+        }],
+      },
+    },
+  },
+
+  {
+    id: 'ptw-stacked-100-echarts',
+    title: 'Stacked 100% bar (ECharts, proportional labels)',
+    family: 'part-to-whole',
+    engine: 'echarts',
+    chartType: 'bar',
+    variant: 'stacked-100-labels',
+    whenToUse: 'Compare proportional composition across categories in ECharts with percentage labels shown directly on each segment so the reader sees exact share without consulting a tooltip.',
+    description: 'Stacked bar where authors pre-compute percentage values summing to 100; label formatter appends "%" and insideLeft position prevents overflow. ECharts barOption with stacked:true.',
+    tags: ['proportional', 'multi-series', 'stacked', 'percent', 'label-inside', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['stacked', 'percent', 'multi-series'],
+    sampleData: {
+      labels: ['Business', 'Technology', 'Education'],
+      series: [
+        { label: 'On Track', data: [60, 55, 70] },
+        { label: 'At Risk', data: [25, 30, 20] },
+        { label: 'Off Track', data: [15, 15, 10] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#97E152', '#F59E0B', '#E5484D'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { bottom: 0 },
+        xAxis: { type: 'category', data: ['Business', 'Technology', 'Education'] },
+        yAxis: { type: 'value', name: 'Share (%)', max: 100 },
+        series: [
+          { name: 'On Track',  type: 'bar', stack: 'pct', data: [60,55,70], label: { show: true, position: 'inside', formatter: '{c}%' }, itemStyle: { color: '#97E152' } },
+          { name: 'At Risk',   type: 'bar', stack: 'pct', data: [25,30,20], label: { show: true, position: 'inside', formatter: '{c}%' }, itemStyle: { color: '#F59E0B' } },
+          { name: 'Off Track', type: 'bar', stack: 'pct', data: [15,15,10], label: { show: true, position: 'inside', formatter: '{c}%' }, itemStyle: { color: '#E5484D' } },
+        ],
+      },
+    },
+  },
+
+  {
     id: 'part-to-whole-sunburst-drilldown',
     title: 'Sunburst with click-to-drill interaction',
     family: 'part-to-whole',

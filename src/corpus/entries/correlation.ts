@@ -246,6 +246,178 @@ export const correlation: CorpusEntry[] = [
       },
     },
   },
+  {
+    id: 'correlation-bubble-echarts',
+    title: 'Bubble chart (ECharts)',
+    family: 'correlation',
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'bubble',
+    whenToUse: 'Encode three quantitative dimensions in ECharts — x position, y position, and bubble radius — when brush-selection or data-zoom on the bubble cloud is needed.',
+    description: 'ECharts scatter where each point is [x, y, r]; symbolSize is a callback that scales radius proportionally. WGU-themed colors and axis labels.',
+    tags: ['correlation', 'trivariate', 'size-encoding', 'continuous', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['correlation', 'size-encoding'],
+    sampleData: [
+      { label: 'Western Partners', points: [[420, 86, 22], [310, 79, 12], [550, 91, 28]] },
+      { label: 'Eastern Partners', points: [[380, 83, 15], [280, 75, 10], [470, 88, 20]] },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF'],
+        tooltip: { trigger: 'item', formatter: (p: any) => `${p.seriesName}<br/>Enrollment: ${p.data[0]}<br/>Completion: ${p.data[1]}%<br/>Revenue: $${p.data[2]}K` },
+        legend: { bottom: 0 },
+        xAxis: { type: 'value', name: 'Enrollment', scale: true },
+        yAxis: { type: 'value', name: 'Completion Rate (%)', min: 60, max: 100 },
+        series: [
+          { name: 'Western', type: 'scatter', symbolSize: (d: number[]) => d[2] * 1.2, data: [[420,86,22],[310,79,12],[550,91,28]], itemStyle: { color: '#0070F0', opacity: 0.8 } },
+          { name: 'Eastern', type: 'scatter', symbolSize: (d: number[]) => d[2] * 1.2, data: [[380,83,15],[280,75,10],[470,88,20]], itemStyle: { color: '#46B1EF', opacity: 0.8 } },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'correlation-heatmap-echarts',
+    title: 'Heatmap correlation grid (ECharts)',
+    family: 'correlation',
+    secondaryFamilies: ['distribution'],
+    engine: 'echarts',
+    chartType: 'heatmap',
+    variant: 'correlation-matrix',
+    whenToUse: 'Survey pairwise correlations using the ECharts engine when the interactive visualMap filter and tooltip are preferred over the Chart.js matrix plugin.',
+    description: 'ECharts heatmap factory with symmetric [col, row, value] data; the WGU heat ramp maps negative-to-positive correlations from muted blue to deep navy.',
+    tags: ['correlation', 'heatmap', 'multivariate', 'matrix', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['heatmap', 'correlation'],
+    sampleData: {
+      metrics: ['Enrollment', 'Completion', 'Retention', 'Revenue'],
+      data: [
+        [0,0,100],[1,0,72],[2,0,65],[3,0,80],
+        [0,1,72],[1,1,100],[2,1,81],[3,1,68],
+        [0,2,65],[1,2,81],[2,2,100],[3,2,74],
+        [0,3,80],[1,3,68],[2,3,74],[3,3,100],
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'heatmapOption',
+      args: [
+        ['Enrollment', 'Completion', 'Retention', 'Revenue'],
+        ['Enrollment', 'Completion', 'Retention', 'Revenue'],
+        [
+          [0,0,100],[1,0,72],[2,0,65],[3,0,80],
+          [0,1,72],[1,1,100],[2,1,81],[3,1,68],
+          [0,2,65],[1,2,81],[2,2,100],[3,2,74],
+          [0,3,80],[1,3,68],[2,3,74],[3,3,100],
+        ],
+      ],
+    },
+  },
+
+  {
+    id: 'correlation-scatter-size-color',
+    title: 'Scatter with size + color encoding',
+    family: 'correlation',
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'size-color',
+    whenToUse: 'Encode four dimensions simultaneously — x, y, bubble size (revenue), and bubble color (region) — when a simple scatter or bubble chart would lose a key grouping variable.',
+    description: 'ECharts scatter with per-series symbol size and color encoding; each series represents a region and point radius encodes revenue on a square-root scale. WGU-branded palette.',
+    tags: ['correlation', 'trivariate', 'size-encoding', 'categorical', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['correlation', 'size-encoding', 'categorical'],
+    sampleData: [
+      { label: 'Mountain West', points: [[380, 84, 550], [310, 79, 320], [470, 90, 740]] },
+      { label: 'Southeast', points: [[290, 80, 380], [420, 86, 620], [350, 82, 430]] },
+      { label: 'Northeast', points: [[250, 76, 210], [400, 85, 580], [460, 88, 810]] },
+    ],
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF', '#002855'],
+        tooltip: { trigger: 'item', formatter: (p: any) => `${p.seriesName}<br/>Enrollment: ${p.data[0]}<br/>Completion: ${p.data[1]}%<br/>Revenue: $${p.data[2]}K` },
+        legend: { bottom: 0 },
+        xAxis: { type: 'value', name: 'Enrollment', scale: true },
+        yAxis: { type: 'value', name: 'Completion Rate (%)', min: 60, max: 100 },
+        series: [
+          { name: 'Mountain West', type: 'scatter', symbolSize: (d: number[]) => Math.sqrt(d[2]) * 1.5, data: [[380,84,550],[310,79,320],[470,90,740]], itemStyle: { color: '#0070F0', opacity: 0.8 } },
+          { name: 'Southeast',    type: 'scatter', symbolSize: (d: number[]) => Math.sqrt(d[2]) * 1.5, data: [[290,80,380],[420,86,620],[350,82,430]], itemStyle: { color: '#46B1EF', opacity: 0.8 } },
+          { name: 'Northeast',    type: 'scatter', symbolSize: (d: number[]) => Math.sqrt(d[2]) * 1.5, data: [[250,76,210],[400,85,580],[460,88,810]], itemStyle: { color: '#002855', opacity: 0.8 } },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'correlation-parallel-brush',
+    title: 'Parallel coordinates with brush',
+    family: 'correlation',
+    engine: 'echarts',
+    chartType: 'parallel',
+    variant: 'brush',
+    whenToUse: 'Filter a multivariate dataset interactively by dragging range handles on any axis — e.g. highlight only partners with >70% completion and >$500K revenue simultaneously.',
+    description: 'ECharts parallel coordinates with parallelAxisDefault.realtime:true and brush-style axis handles; dragging on any axis filters visible lines to the selected range. WGU-themed polylines.',
+    tags: ['correlation', 'multivariate', 'parallel', 'interactive', 'brush', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['multivariate', 'interactive', 'brush'],
+    sampleData: {
+      dims: ['Enrollment', 'Completion %', 'Retention %', 'Satisfaction', 'Revenue ($K)'],
+      rows: [
+        { name: 'Boeing', values: [1420, 78, 85, 4.2, 890] },
+        { name: 'Amazon', values: [1180, 76, 82, 4.0, 740] },
+        { name: 'IHC', values: [960, 72, 80, 3.9, 580] },
+        { name: 'Salt Lake CC', values: [720, 68, 77, 3.7, 420] },
+        { name: 'Utah DOE', values: [540, 65, 74, 3.6, 310] },
+        { name: 'Davis Tech', values: [380, 62, 71, 3.4, 220] },
+      ],
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'parallelOption',
+      args: [
+        ['Enrollment', 'Completion %', 'Retention %', 'Satisfaction', 'Revenue ($K)'],
+        [
+          { name: 'Boeing', values: [1420, 78, 85, 4.2, 890] },
+          { name: 'Amazon', values: [1180, 76, 82, 4.0, 740] },
+          { name: 'IHC', values: [960, 72, 80, 3.9, 580] },
+          { name: 'Salt Lake CC', values: [720, 68, 77, 3.7, 420] },
+          { name: 'Utah DOE', values: [540, 65, 74, 3.6, 310] },
+          { name: 'Davis Tech', values: [380, 62, 71, 3.4, 220] },
+        ],
+      ],
+    },
+  },
+
+  {
+    id: 'correlation-scatter-chartjs-multi',
+    title: 'Multi-series scatter (Chart.js)',
+    family: 'correlation',
+    engine: 'chartjs',
+    chartType: 'scatter',
+    variant: 'multi-series-chartjs',
+    whenToUse: 'Compare the correlation pattern of multiple groups in a single Chart.js scatter when all series must share one canvas context — avoiding an ECharts instance on a Chart.js-heavy dashboard.',
+    description: 'Three-series Chart.js scatter plot with distinct WGU-palette colors per group; each series traces enrollment vs. completion for a geographic region. Uses the standard scatter chart type.',
+    tags: ['correlation', 'bivariate', 'multi-series', 'continuous'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['correlation', 'multi-series'],
+    sampleData: [
+      { label: 'Mountain West', points: [{ x: 380, y: 84 }, { x: 310, y: 79 }, { x: 470, y: 90 }] },
+      { label: 'Southeast', points: [{ x: 290, y: 80 }, { x: 420, y: 86 }, { x: 350, y: 82 }] },
+      { label: 'Northeast', points: [{ x: 250, y: 76 }, { x: 400, y: 85 }, { x: 460, y: 88 }] },
+    ],
+    spec: {
+      engine: 'chartjs',
+      type: 'scatter',
+      data: [
+        { label: 'Mountain West', points: [{ x: 380, y: 84 }, { x: 310, y: 79 }, { x: 470, y: 90 }] },
+        { label: 'Southeast',     points: [{ x: 290, y: 80 }, { x: 420, y: 86 }, { x: 350, y: 82 }] },
+        { label: 'Northeast',     points: [{ x: 250, y: 76 }, { x: 400, y: 85 }, { x: 460, y: 88 }] },
+      ],
+    },
+  },
+
   // ── Phase B feature-showcase entries ──────────────────────────────────────
 
   {

@@ -350,6 +350,167 @@ export const distribution: CorpusEntry[] = [
     },
   },
 
+  {
+    id: 'distribution-boxplot-grouped',
+    title: 'Grouped box plot (multi-category)',
+    family: 'distribution',
+    engine: 'echarts',
+    chartType: 'boxplot',
+    variant: 'grouped',
+    whenToUse: 'Compare distribution spread across multiple series within the same category axis — e.g. completion score distributions by cohort year, shown side-by-side per college.',
+    description: 'Two side-by-side boxplot series per category allow direct comparison of distribution shape, spread, and median shift between two populations (e.g., FY23 vs FY24). ECharts boxplotOption factory.',
+    tags: ['distribution', 'spread', 'quartile', 'multi-series', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['distribution', 'multi-series'],
+    sampleData: {
+      labels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      fy23: [[68,72,79,84,91],[65,70,76,81,88],[70,74,80,85,92],[66,71,78,83,89]],
+      fy24: [[71,75,81,86,93],[68,73,79,84,91],[72,76,82,87,94],[69,74,80,85,92]],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0', '#46B1EF'],
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { bottom: 0 },
+        xAxis: { type: 'category', data: ['Business', 'Technology', 'Education', 'Healthcare'] },
+        yAxis: { type: 'value', name: 'Score', min: 55, max: 100 },
+        series: [
+          {
+            name: 'FY23',
+            type: 'boxplot',
+            itemStyle: { borderColor: '#0070F0', color: '#EEF6F9' },
+            data: [[68,72,79,84,91],[65,70,76,81,88],[70,74,80,85,92],[66,71,78,83,89]],
+          },
+          {
+            name: 'FY24',
+            type: 'boxplot',
+            itemStyle: { borderColor: '#46B1EF', color: '#D6EFF9' },
+            data: [[71,75,81,86,93],[68,73,79,84,91],[72,76,82,87,94],[69,74,80,85,92]],
+          },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'distribution-scatter-marginal',
+    title: 'Scatter with marginal frequency bars',
+    family: 'distribution',
+    secondaryFamilies: ['correlation'],
+    engine: 'echarts',
+    chartType: 'scatter',
+    variant: 'marginal',
+    whenToUse: 'Combine a bivariate scatter with univariate frequency bars on the top and right margins — shows the joint distribution and both individual distributions simultaneously without switching charts.',
+    description: 'ECharts raw option with three grid panels: the main scatter (center), a bar histogram on the top margin (x-axis distribution), and a horizontal bar on the right margin (y-axis distribution).',
+    tags: ['distribution', 'correlation', 'scatter', 'marginal', 'bivariate', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['distribution', 'multi-panel'],
+    sampleData: {
+      points: [[320,82],[410,85],[275,78],[500,88],[380,84],[220,74],[460,89],[340,81],[290,80],[430,87],[190,71],[470,90]],
+      xBins: [{ range: '175–275', count: 2 }, { range: '275–375', count: 4 }, { range: '375–475', count: 4 }, { range: '475–525', count: 2 }],
+      yBins: [{ range: '70–75', count: 2 }, { range: '75–80', count: 1 }, { range: '80–85', count: 5 }, { range: '85–90', count: 3 }, { range: '90+', count: 1 }],
+    },
+    spec: {
+      engine: 'echarts',
+      option: {
+        color: ['#0070F0'],
+        grid: [
+          { left: '15%', right: '20%', top: '25%', bottom: '15%' },
+          { left: '15%', right: '20%', top: '5%',  bottom: '78%' },
+          { left: '82%', right: '3%',  top: '25%', bottom: '15%' },
+        ],
+        xAxis: [
+          { type: 'value', gridIndex: 0, scale: true, name: 'Enrollment' },
+          { type: 'category', gridIndex: 1, data: ['175–275','275–375','375–475','475–525'], show: false },
+        ],
+        yAxis: [
+          { type: 'value', gridIndex: 0, scale: true, name: 'Completion %', min: 60, max: 100 },
+          { type: 'value', gridIndex: 1, show: false },
+          { type: 'category', gridIndex: 2, data: ['70–75','75–80','80–85','85–90','90+'], show: false },
+          { type: 'value', gridIndex: 2, show: false },
+        ],
+        series: [
+          { name: 'Programs', type: 'scatter', xAxisIndex: 0, yAxisIndex: 0, symbolSize: 12, itemStyle: { color: '#0070F0', opacity: 0.8 },
+            data: [[320,82],[410,85],[275,78],[500,88],[380,84],[220,74],[460,89],[340,81],[290,80],[430,87],[190,71],[470,90]] },
+          { name: 'X Dist.', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, itemStyle: { color: '#46B1EF', opacity: 0.6, borderRadius: [2,2,0,0] },
+            data: [2, 4, 4, 2] },
+          { name: 'Y Dist.', type: 'bar', xAxisIndex: 0, yAxisIndex: 2, itemStyle: { color: '#46B1EF', opacity: 0.6, borderRadius: [0,2,2,0] },
+            data: [2, 1, 5, 3, 1] },
+        ],
+      },
+    },
+  },
+
+  {
+    id: 'distribution-error-bars-multi',
+    title: 'Multi-category error bars',
+    family: 'distribution',
+    engine: 'chartjs',
+    chartType: 'barWithErrorBars',
+    variant: 'multi-category',
+    whenToUse: 'Compare mean ± confidence interval across two or more groups per category — e.g., FY23 vs FY24 pass rate with uncertainty bands for each academic college.',
+    description: 'Multi-series barWithErrorBars where each series has its own mean and CI bounds per category; grouped bars with error whiskers let readers see both central tendency and uncertainty for each group.',
+    tags: ['distribution', 'error-bars', 'uncertainty', 'multi-series', 'statistical'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['error-bars', 'multi-series'],
+    sampleData: {
+      labels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      fy23: [{ y: 82, yMin: 78, yMax: 86 }, { y: 77, yMin: 72, yMax: 82 }, { y: 85, yMin: 81, yMax: 89 }, { y: 79, yMin: 74, yMax: 84 }],
+      fy24: [{ y: 85, yMin: 81, yMax: 89 }, { y: 80, yMin: 75, yMax: 85 }, { y: 88, yMin: 84, yMax: 92 }, { y: 83, yMin: 78, yMax: 88 }],
+    },
+    spec: {
+      engine: 'chartjs',
+      type: 'barWithErrorBars',
+      labels: ['Business', 'Technology', 'Education', 'Healthcare'],
+      data: [
+        { label: 'FY23', data: [{ y: 82, yMin: 78, yMax: 86 }, { y: 77, yMin: 72, yMax: 82 }, { y: 85, yMin: 81, yMax: 89 }, { y: 79, yMin: 74, yMax: 84 }] },
+        { label: 'FY24', data: [{ y: 85, yMin: 81, yMax: 89 }, { y: 80, yMin: 75, yMax: 85 }, { y: 88, yMin: 84, yMax: 92 }, { y: 83, yMin: 78, yMax: 88 }] },
+      ],
+    },
+  },
+
+  {
+    id: 'distribution-calendar-heatmap-alt',
+    title: 'Calendar heatmap (weekly pattern)',
+    family: 'distribution',
+    secondaryFamilies: ['change-over-time'],
+    engine: 'echarts',
+    chartType: 'calendarHeatmap',
+    variant: 'weekly-pattern',
+    whenToUse: 'Reveal weekly activity patterns (e.g. Monday vs. Friday logins) across a calendar year — the distribution family perspective focuses on how data concentrates at certain days.',
+    description: 'calendarHeatmapOption for 2024 with a rich dataset covering all 12 months; the WGU heat ramp reveals weekday concentration vs. weekend sparsity in login or submission events.',
+    tags: ['distribution', 'calendar', 'heatmap', 'daily', 'pattern', 'echarts'],
+    runtimes: ['LWC', 'Next', 'HTML'],
+    features: ['calendar', 'heatmap', 'distribution'],
+    sampleData: {
+      year: 2024,
+      note: 'Peak on weekdays; troughs on weekends',
+    },
+    spec: {
+      engine: 'echarts',
+      factory: 'calendarHeatmapOption',
+      args: [
+        2024,
+        [
+          ['2024-01-08', 78], ['2024-01-09', 82], ['2024-01-10', 91], ['2024-01-11', 88], ['2024-01-12', 74],
+          ['2024-01-15', 80], ['2024-01-16', 85], ['2024-01-17', 94], ['2024-01-18', 89], ['2024-01-19', 77],
+          ['2024-02-05', 88], ['2024-02-06', 93], ['2024-02-07', 96], ['2024-02-08', 91], ['2024-02-09', 82],
+          ['2024-03-04', 72], ['2024-03-05', 78], ['2024-03-06', 85], ['2024-03-07', 81], ['2024-03-08', 68],
+          ['2024-04-15', 84], ['2024-04-16', 89], ['2024-04-17', 92], ['2024-04-18', 87], ['2024-04-19', 79],
+          ['2024-05-06', 95], ['2024-05-07', 98], ['2024-05-08', 100], ['2024-05-09', 96], ['2024-05-10', 88],
+          ['2024-06-10', 74], ['2024-06-11', 79], ['2024-06-12', 83], ['2024-06-13', 78], ['2024-06-14', 70],
+          ['2024-07-08', 68], ['2024-07-09', 72], ['2024-07-10', 76], ['2024-07-11', 74], ['2024-07-12', 65],
+          ['2024-08-05', 82], ['2024-08-06', 86], ['2024-08-07', 91], ['2024-08-08', 88], ['2024-08-09', 80],
+          ['2024-09-09', 90], ['2024-09-10', 94], ['2024-09-11', 98], ['2024-09-12', 93], ['2024-09-13', 86],
+          ['2024-10-07', 85], ['2024-10-08', 88], ['2024-10-09', 92], ['2024-10-10', 89], ['2024-10-11', 82],
+          ['2024-11-04', 79], ['2024-11-05', 83], ['2024-11-06', 87], ['2024-11-07', 84], ['2024-11-08', 76],
+          ['2024-12-02', 72], ['2024-12-03', 75], ['2024-12-04', 78], ['2024-12-05', 76], ['2024-12-06', 68],
+        ],
+      ],
+    },
+  },
+
   // ── Phase B feature-showcase entries ──────────────────────────────────────
 
   {
