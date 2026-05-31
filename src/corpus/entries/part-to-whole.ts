@@ -153,7 +153,7 @@ export const partToWhole: CorpusEntry[] = [
     chartType: 'groupedBar',
     variant: 'stacked-100',
     whenToUse: 'Compare the proportional composition across multiple categories when absolute totals are less important than share distribution.',
-    description: 'Stacked grouped-bar chart; bars are normalized so each column stretches to full width, emphasising shares that sum to 100 %.',
+    description: 'Stacked bars where each column\'s segments are authored to sum to 100% (a data convention — the engine stacks but does not auto-normalize).',
     tags: ['proportional', 'multi-series', 'stacked', 'percent', 'categorical'],
     runtimes: ['LWC', 'Next', 'HTML'],
     features: ['stacked', 'percent', 'multi-series'],
