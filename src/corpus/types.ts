@@ -14,10 +14,15 @@ export interface CorpusEntry {
   whenToUse: string; description: string; tags: string[];
   runtimes: Runtime[]; features: string[];
   /**
-   * Representative data for the preview/data panel.
-   * INVARIANT: for engine 'chartjs' | 'render-model', sampleData === spec.data (strict single source).
-   * For engine 'echarts', spec.args is the CANONICAL factory argument list; sampleData is an
-   * author-friendly illustration of the same data (shapes differ — code-export reads spec.args).
+   * Representative data for display/preview panels — author-friendly and may use a combined
+   * shape (e.g. { labels, series }).
+   *
+   * CANONICAL SOURCE = `spec`, for ALL engines. Consumers that render or generate export code
+   * MUST read from `spec` — never `sampleData`:
+   *   - chartjs / render-model: spec.type + spec.data (+ spec.labels, spec.opts)
+   *   - echarts (factory form): spec.factory + spec.args
+   *   - echarts (raw form):     spec.option
+   * `sampleData` is illustrative only; its shape is NOT guaranteed to equal spec.data.
    */
   sampleData: unknown;
   spec: ChartSpec;
