@@ -14,7 +14,8 @@
     },
     "./vanilla": { "types": "./dist/vanilla.d.ts", "import": "./dist/vanilla.js" },
     "./react":   { "types": "./dist/react.d.ts",   "import": "./dist/react.js" },
-    "./echarts": { "types": "./dist/echarts.d.ts", "import": "./dist/echarts.js" }
+    "./echarts": { "types": "./dist/echarts.d.ts", "import": "./dist/echarts.js" },
+    "./corpus": { "types": "./dist/corpus.d.ts", "import": "./dist/corpus.js" }
   },
   "files": [
     "dist",

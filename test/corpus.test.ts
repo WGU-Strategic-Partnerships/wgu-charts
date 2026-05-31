@@ -32,3 +32,13 @@ describe('corpus registry', () => {
   it('every entry resolves and engine matches spec.engine', () => { corpus.forEach(e => { expect(() => resolveSpec(e.spec)).not.toThrow(); expect(e.engine).toBe(e.spec.engine); }); });
   it('search returns an array', () => { expect(Array.isArray(search('bar'))).toBe(true); });
 });
+
+describe('corpus coverage', () => {
+  it('reports coverage per family and meets the Phase A floor (logs gap vs ~150)', () => {
+    const counts = Object.fromEntries(FAMILIES_ORDER.map(f => [f, byFamily(f as any).length]));
+    // eslint-disable-next-line no-console
+    console.log('CORPUS COVERAGE', JSON.stringify(counts), 'total', corpus.length);
+    FAMILIES_ORDER.forEach(f => expect(counts[f]).toBeGreaterThan(0)); // every family non-empty
+    expect(corpus.length).toBeGreaterThanOrEqual(40);                  // Phase A floor; Phase B → ~150
+  });
+});

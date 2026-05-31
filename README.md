@@ -71,6 +71,53 @@ chart.setOption(geoChoroplethOption([{ name: 'Utah', value: 42 }]));
 > The factory functions never import or reference the `echarts` package — they return plain option
 > objects — so they are LWS-safe and pass `@lwc/babel-plugin-component` without wrappers.
 
+## Corpus (`wgu-charts/corpus`)
+
+A curated, WGU-branded registry of ~43 chart variations (Phase A) organized by analytical intent across 11 families. This is the single source the catalog app, code-export pipeline, Figma integration, and design system all read from — not a runtime dependency, but the shared schema that drives them.
+
+### Shape
+
+```ts
+// Every entry in the registry:
+interface CorpusEntry {
+  id: string;           // e.g. 'magnitude-bar-vertical'
+  title: string;
+  family: Family;       // one of 11 analytical families
+  engine: Engine;       // 'chartjs' | 'echarts' | 'render-model'
+  chartType: string;
+  whenToUse: string;
+  description: string;
+  tags: string[];
+  runtimes: Runtime[];  // 'LWC' | 'Next' | 'HTML'
+  features: string[];
+  sampleData: unknown;
+  spec: ChartSpec;      // 3-arm union (see below)
+}
+
+// ChartSpec — 3-arm union, one per engine:
+type ChartSpec =
+  | { engine: 'chartjs';       type: string;    data: unknown; labels?: string[]; opts?: unknown }
+  | { engine: 'render-model';  type: string;    data: unknown; opts?: unknown }
+  | { engine: 'echarts';       factory: string; args: unknown[]; needsMap?: string };
+
+// resolveSpec(spec) renders OR generates a config from the same spec:
+// returns { kind: 'chartjs', value: Chart.js config }
+//       | { kind: 'render-model', value: render model }
+//       | { kind: 'echarts', value: ECharts option object }
+```
+
+### Usage
+
+```ts
+import { corpus, byFamily, resolveSpec } from 'wgu-charts/corpus';
+const bars = byFamily('magnitude');
+const resolved = resolveSpec(bars[0].spec); // { kind:'chartjs', value: <Chart.js config> }
+```
+
+Other helpers: `byEngine(eng)`, `byFeature(feat)`, `search(q)`, `FAMILIES`, `FAMILIES_ORDER`.
+
+Phase A covers everything the library renders today (~43 entries); Phase B grows toward ~150 by adding new chart types — the coverage test logs the gap.
+
 ## Catalog
 `pnpm build` then open `catalog/index.html`.
 
