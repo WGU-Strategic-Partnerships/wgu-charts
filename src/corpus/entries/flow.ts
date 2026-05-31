@@ -77,7 +77,7 @@ export const flow: CorpusEntry[] = [
     description: 'ECharts sankey factory produces a gradient-linked Sankey from a node list and named source/target links; hover highlights connected paths.',
     tags: ['sankey', 'flow', 'allocation', 'echarts', 'interactive'],
     runtimes: ['LWC', 'Next', 'HTML'],
-    features: ['flow'],
+    features: ['flow', 'interactive'],
     sampleData: {
       nodes: [
         { name: 'Direct Admit' }, { name: 'Transfer Partners' }, { name: 'Employer Partners' },

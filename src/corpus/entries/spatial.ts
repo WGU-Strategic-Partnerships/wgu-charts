@@ -51,7 +51,7 @@ export const spatial: CorpusEntry[] = [
     description: 'ECharts geo-choropleth factory applies the WGU heat ramp via visualMap; requires the USA topojson registered as "USA" before render.',
     tags: ['geo', 'choropleth', 'us-map', 'state-level', 'echarts', 'interactive'],
     runtimes: ['LWC', 'Next', 'HTML'],
-    features: ['geo'],
+    features: ['geo', 'interactive'],
     sampleData: [
       { name: 'California', value: 4820 },
       { name: 'Texas', value: 3610 },

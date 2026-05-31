@@ -11,5 +11,13 @@ export interface CorpusEntry {
   // must equal spec.engine — enforced by corpus.test.ts
   engine: Engine; chartType: string; variant?: string;
   whenToUse: string; description: string; tags: string[];
-  runtimes: Runtime[]; features: string[]; sampleData: unknown; spec: ChartSpec;
+  runtimes: Runtime[]; features: string[];
+  /**
+   * Representative data for the preview/data panel.
+   * INVARIANT: for engine 'chartjs' | 'render-model', sampleData === spec.data (strict single source).
+   * For engine 'echarts', spec.args is the CANONICAL factory argument list; sampleData is an
+   * author-friendly illustration of the same data (shapes differ — code-export reads spec.args).
+   */
+  sampleData: unknown;
+  spec: ChartSpec;
 }

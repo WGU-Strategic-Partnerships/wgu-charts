@@ -116,7 +116,7 @@ const resolved = resolveSpec(bars[0].spec); // { kind:'chartjs', value: <Chart.j
 
 Other helpers: `byEngine(eng)`, `byFeature(feat)`, `search(q)`, `FAMILIES`, `FAMILIES_ORDER`.
 
-Phase A covers everything the library renders today (~43 entries); Phase B grows toward ~150 by adding new chart types — the coverage test logs the gap.
+Phase A covers everything the library renders today (~43 entries); Phase B grows toward ~150 by adding new chart types — the coverage test logs the gap. `features[]` describes each chart's type-level capabilities; the full interactive feature-showcase set (dataZoom, drill-down, brush, live-update, etc.) lands in Phase B.
 
 ## Catalog
 `pnpm build` then open `catalog/index.html`.
