@@ -36,9 +36,13 @@ var WGUCharts = (() => {
     drillSpec: () => drillSpec,
     errorBarChart: () => errorBarChart,
     forceGraphChart: () => forceGraphChart,
+    gaugeOption: () => gaugeOption,
     geoBubbleChart: () => geoBubbleChart,
+    geoChoroplethOption: () => geoChoroplethOption,
+    graphOption: () => graphOption,
     groupedBarChart: () => groupedBarChart,
     heatmapChart: () => heatmapChart,
+    heatmapOption: () => heatmapOption,
     hitTest: () => hitTest,
     lineChart: () => lineChart,
     mount: () => mount,
@@ -49,10 +53,15 @@ var WGUCharts = (() => {
     polarChart: () => polarChart,
     radarChart: () => radarChart,
     registerPlugin: () => registerPlugin,
+    registerWguEchartsTheme: () => registerWguEchartsTheme,
     registerWguPlugins: () => registerWguPlugins,
     sankeyChart: () => sankeyChart,
+    sankeyOption: () => sankeyOption,
     scatterChart: () => scatterChart,
     treemapChart: () => treemapChart,
+    treemapOption: () => treemapOption,
+    wguEchartsTheme: () => wguEchartsTheme,
+    wguHeatRamp: () => wguHeatRamp,
     wguPlugins: () => wguPlugins,
     wguTheme: () => wguTheme,
     wordCloudChart: () => wordCloudChart
@@ -1901,6 +1910,185 @@ var WGUCharts = (() => {
           }
         };
       }
+    };
+  }
+
+  // src/echarts/theme.ts
+  var wguEchartsTheme = {
+    color: [wguTheme.colors.medium, wguTheme.colors.sky, wguTheme.colors.navy, wguTheme.colors.lime, wguTheme.colors.fg2, wguTheme.colors.grey],
+    backgroundColor: "transparent",
+    textStyle: { fontFamily: wguTheme.font.family, color: wguTheme.colors.fg2 },
+    title: { textStyle: { color: wguTheme.colors.navy } },
+    categoryAxis: { axisLine: { lineStyle: { color: "rgba(0,40,85,.08)" } }, axisTick: { show: false }, axisLabel: { color: wguTheme.colors.fg2 }, splitLine: { show: false } },
+    valueAxis: { axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: "#6B7C93" }, splitLine: { lineStyle: { color: "rgba(0,40,85,.08)" } } },
+    tooltip: { backgroundColor: wguTheme.colors.navy, borderWidth: 0, textStyle: { color: "#fff" } }
+  };
+  var wguHeatRamp = ["#EEF6F9", "#46B1EF", "#0070F0", "#002855"];
+  function registerWguEchartsTheme(echarts) {
+    if (echarts && typeof echarts.registerTheme === "function") echarts.registerTheme("wgu", wguEchartsTheme);
+  }
+
+  // src/echarts/geo.ts
+  function geoChoroplethOption(data, opts = {}) {
+    return {
+      tooltip: {
+        trigger: "item",
+        formatter: (p) => `${p.name}: ${p.value || 0}`
+      },
+      visualMap: {
+        min: 0,
+        max: opts.max ?? Math.max(1, ...data.map((d) => d.value)),
+        left: "left",
+        bottom: "4%",
+        calculable: true,
+        inRange: { color: wguHeatRamp },
+        text: ["High", "Low"],
+        textStyle: { color: "#6B7C93" }
+      },
+      series: [{
+        type: "map",
+        map: opts.mapName || "USA",
+        roam: false,
+        itemStyle: { borderColor: "#fff", borderWidth: 0.5 },
+        emphasis: {
+          label: { show: false },
+          itemStyle: { areaColor: wguTheme.colors.lime }
+        },
+        data: cloneArr(data)
+      }]
+    };
+  }
+
+  // src/echarts/sankey.ts
+  function sankeyOption(nodes, links) {
+    return {
+      tooltip: { trigger: "item" },
+      series: [{
+        type: "sankey",
+        emphasis: { focus: "adjacency" },
+        lineStyle: { color: "gradient", opacity: 0.4 },
+        itemStyle: { borderWidth: 0 },
+        data: cloneArr(nodes),
+        links: cloneArr(links)
+      }]
+    };
+  }
+
+  // src/echarts/treemap.ts
+  function treemapOption(data) {
+    return {
+      tooltip: {},
+      series: [{
+        type: "treemap",
+        roam: false,
+        nodeClick: false,
+        breadcrumb: { show: false },
+        label: { color: "#fff", fontWeight: 600 },
+        levels: [{ itemStyle: { borderColor: "#fff", borderWidth: 2, gapWidth: 2 } }],
+        data: cloneArr(data)
+      }]
+    };
+  }
+
+  // src/echarts/graph.ts
+  function graphOption(nodes, links) {
+    return {
+      tooltip: {},
+      series: [{
+        type: "graph",
+        layout: "force",
+        roam: true,
+        label: { show: true, color: wguTheme.colors.navy },
+        force: { repulsion: 180, edgeLength: 90 },
+        lineStyle: { color: wguTheme.colors.fg2, opacity: 0.5 },
+        itemStyle: { color: wguTheme.colors.medium },
+        symbolSize: 34,
+        data: cloneArr(nodes),
+        links: cloneArr(links)
+      }]
+    };
+  }
+
+  // src/echarts/heatmap.ts
+  function heatmapOption(xLabels, yLabels, data, opts = {}) {
+    return {
+      tooltip: { position: "top" },
+      grid: { height: "62%", top: "8%" },
+      xAxis: { type: "category", data: cloneArr(xLabels), splitArea: { show: true } },
+      yAxis: { type: "category", data: cloneArr(yLabels), splitArea: { show: true } },
+      visualMap: {
+        min: 0,
+        max: opts.max ?? 10,
+        calculable: true,
+        orient: "horizontal",
+        left: "center",
+        bottom: "2%",
+        inRange: { color: wguHeatRamp },
+        textStyle: { color: "#6B7C93" }
+      },
+      series: [{
+        type: "heatmap",
+        data: cloneArr(data),
+        label: { show: false },
+        emphasis: { itemStyle: { shadowBlur: 8, shadowColor: "rgba(0,40,85,.3)" } }
+      }]
+    };
+  }
+
+  // src/echarts/gauge.ts
+  function gaugeOption(opts) {
+    const min = opts.min ?? 0;
+    const max = opts.max ?? 100;
+    const [t1, t2] = opts.thresholds ?? [max * 0.53, max * 0.66];
+    const stops = [
+      [t1 / max, "#E5484D"],
+      [t2 / max, "#F5A623"],
+      [1, "#97E152"]
+    ];
+    return {
+      series: [{
+        type: "gauge",
+        min,
+        max,
+        startAngle: 210,
+        endAngle: -30,
+        progress: {
+          show: true,
+          width: 14,
+          itemStyle: { color: wguTheme.colors.medium }
+        },
+        axisLine: {
+          lineStyle: { width: 14, color: stops }
+        },
+        pointer: {
+          itemStyle: { color: wguTheme.colors.navy }
+        },
+        axisTick: { show: false },
+        splitLine: {
+          length: 14,
+          lineStyle: { color: "#fff", width: 2 }
+        },
+        axisLabel: { color: "#6B7C93", distance: 18, fontSize: 10 },
+        anchor: {
+          show: true,
+          size: 14,
+          itemStyle: { color: wguTheme.colors.navy }
+        },
+        detail: {
+          valueAnimation: true,
+          formatter: "{value}%",
+          color: wguTheme.colors.navy,
+          fontFamily: wguTheme.font.numerals,
+          fontSize: 28,
+          offsetCenter: [0, "40%"]
+        },
+        title: {
+          offsetCenter: [0, "72%"],
+          color: wguTheme.colors.fg2,
+          fontSize: 12
+        },
+        data: [{ value: opts.value, name: opts.name || "" }]
+      }]
     };
   }
 

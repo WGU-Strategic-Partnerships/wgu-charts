@@ -24,7 +24,9 @@ export function heatmapOption(
     },
     series: [{
       type: 'heatmap',
-      data: cloneArr(data)
+      data: cloneArr(data),
+      label: { show: false },
+      emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,40,85,.3)' } }
     }]
   };
 }

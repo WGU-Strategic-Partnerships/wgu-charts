@@ -18,6 +18,7 @@ export function geoChoroplethOption(
       bottom: '4%',
       calculable: true,
       inRange: { color: wguHeatRamp },
+      text: ['High', 'Low'],
       textStyle: { color: '#6B7C93' }
     },
     series: [{

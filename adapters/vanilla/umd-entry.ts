@@ -1,5 +1,6 @@
 import { createWGUCharts } from './index';
 export * from '../../src/index';
+export * from '../../src/echarts';
 
 const Chart = (globalThis as any).Chart;
 if (!Chart) {
