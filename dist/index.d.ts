@@ -165,7 +165,9 @@ declare function heatmapChart(data: HeatmapDatum[], opts?: HeatmapOptions): any;
 
 interface TreemapDatum {
     label: string;
-    value: number;
+    value?: number;
+    count?: number;
+    [k: string]: unknown;
 }
 interface TreemapOptions {
     label?: string;
@@ -193,10 +195,14 @@ interface ErrorBarDatum {
     yMin: number;
     yMax: number;
 }
+interface ErrorBarSeries {
+    label: string;
+    data: ErrorBarDatum[];
+}
 interface ErrorBarOptions {
     label?: string;
 }
-declare function errorBarChart(labels: string[], data: ErrorBarDatum[], opts?: ErrorBarOptions): any;
+declare function errorBarChart(labels: string[], data: ErrorBarDatum[] | ErrorBarSeries[], opts?: ErrorBarOptions): any;
 
 interface WordCloudDatum {
     text: string;
@@ -257,4 +263,4 @@ declare function registerWguPlugins(Chart: {
     register: (...p: any[]) => void;
 }): void;
 
-export { type BarDatum, type BarOptions, type BoxplotOptions, type BubbleSeries, type CandleDatum, type CandlestickOptions, type ComboSeries, type DrillSpecInput, type ErrorBarDatum, type ErrorBarOptions, type FilterState, type ForceGraphEdge, type ForceGraphNode, type ForceGraphOptions, type GeoBubbleOptions, type GeoBubblePoint, type GroupedBarOptions, type HeatmapDatum, type HeatmapOptions, type Hit, type LineOptions, type LineSeries, type PointSeries, type SankeyDatum, type SankeyOptions, type ScatterOpts, type SliceDatum, type TreemapDatum, type TreemapOptions, type WguTheme, type WordCloudDatum, type WordCloudOptions, applyData, applyFilters, barChart, boxplotChart, bubbleChart, candlestickChart, comboChart, createTheme, deriveFilterOptions, doughnutChart, drillSpec, errorBarChart, forceGraphChart, geoBubbleChart, groupedBarChart, heatmapChart, hitTest, lineChart, pBarLabels, pCrosshair, pPointLabels, pieChart, polarChart, radarChart, registerPlugin, registerWguPlugins, sankeyChart, scatterChart, treemapChart, wguPlugins, wguTheme, wordCloudChart };
+export { type BarDatum, type BarOptions, type BoxplotOptions, type BubbleSeries, type CandleDatum, type CandlestickOptions, type ComboSeries, type DrillSpecInput, type ErrorBarDatum, type ErrorBarOptions, type ErrorBarSeries, type FilterState, type ForceGraphEdge, type ForceGraphNode, type ForceGraphOptions, type GeoBubbleOptions, type GeoBubblePoint, type GroupedBarOptions, type HeatmapDatum, type HeatmapOptions, type Hit, type LineOptions, type LineSeries, type PointSeries, type SankeyDatum, type SankeyOptions, type ScatterOpts, type SliceDatum, type TreemapDatum, type TreemapOptions, type WguTheme, type WordCloudDatum, type WordCloudOptions, applyData, applyFilters, barChart, boxplotChart, bubbleChart, candlestickChart, comboChart, createTheme, deriveFilterOptions, doughnutChart, drillSpec, errorBarChart, forceGraphChart, geoBubbleChart, groupedBarChart, heatmapChart, hitTest, lineChart, pBarLabels, pCrosshair, pPointLabels, pieChart, polarChart, radarChart, registerPlugin, registerWguPlugins, sankeyChart, scatterChart, treemapChart, wguPlugins, wguTheme, wordCloudChart };

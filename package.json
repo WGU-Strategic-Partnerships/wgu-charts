@@ -1,6 +1,6 @@
 {
   "name": "wgu-charts",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "WGU-branded, dynamic Chart.js chart library",
   "type": "module",
   "main": "./dist/wgu-charts.umd.js",

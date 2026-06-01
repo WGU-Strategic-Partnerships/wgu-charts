@@ -71,6 +71,10 @@ function geoChoroplethOption(data, opts = {}) {
       type: "map",
       map: opts.mapName || "USA",
       roam: false,
+      // Fill the container — without an explicit layout the map shrinks to leave
+      // room for the visualMap legend and looks tiny in small cards.
+      layoutCenter: ["50%", "50%"],
+      layoutSize: "100%",
       itemStyle: { borderColor: "#fff", borderWidth: 0.5 },
       emphasis: {
         label: { show: false },
