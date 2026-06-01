@@ -3449,13 +3449,15 @@ var distribution = [
         ],
         xAxis: [
           { type: "value", gridIndex: 0, scale: true, name: "Enrollment" },
-          { type: "category", gridIndex: 1, data: ["175\u2013275", "275\u2013375", "375\u2013475", "475\u2013525"], show: false }
+          { type: "category", gridIndex: 1, data: ["175\u2013275", "275\u2013375", "375\u2013475", "475\u2013525"], show: false },
+          // Right-margin value axis (grid 2). A series' x and y axes MUST live in
+          // the same grid — the right-margin bar previously used xAxis[0] (grid 0).
+          { type: "value", gridIndex: 2, show: false }
         ],
         yAxis: [
           { type: "value", gridIndex: 0, scale: true, name: "Completion %", min: 60, max: 100 },
           { type: "value", gridIndex: 1, show: false },
-          { type: "category", gridIndex: 2, data: ["70\u201375", "75\u201380", "80\u201385", "85\u201390", "90+"], show: false },
-          { type: "value", gridIndex: 2, show: false }
+          { type: "category", gridIndex: 2, data: ["70\u201375", "75\u201380", "80\u201385", "85\u201390", "90+"], show: false }
         ],
         series: [
           {
@@ -3478,7 +3480,7 @@ var distribution = [
           {
             name: "Y Dist.",
             type: "bar",
-            xAxisIndex: 0,
+            xAxisIndex: 2,
             yAxisIndex: 2,
             itemStyle: { color: "#46B1EF", opacity: 0.6, borderRadius: [0, 2, 2, 0] },
             data: [2, 1, 5, 3, 1]
@@ -4522,13 +4524,16 @@ var deviation = [
         tooltip: { trigger: "axis" },
         xAxis: { type: "category", data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"], boundaryGap: false },
         yAxis: { type: "value", name: "\u0394 Enrollments" },
+        // Continuous diverging map (not piecewise): a piecewise visualMap on a
+        // cartesian line throws "reading 'coord'" in echarts 5.x. Symmetric
+        // min/max centres the red→green transition at zero — green above, red below.
         visualMap: {
           show: false,
-          type: "piecewise",
-          pieces: [
-            { gte: 0, color: "#97E152" },
-            { lt: 0, color: "#E5484D" }
-          ]
+          type: "continuous",
+          dimension: 1,
+          min: -210,
+          max: 210,
+          inRange: { color: ["#E5484D", "#E5484D", "#97E152", "#97E152"] }
         },
         series: [{
           name: "Enrollment Delta",

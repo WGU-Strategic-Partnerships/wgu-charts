@@ -204,13 +204,16 @@ export const deviation: CorpusEntry[] = [
         tooltip: { trigger: 'axis' },
         xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'], boundaryGap: false },
         yAxis: { type: 'value', name: 'Δ Enrollments' },
+        // Continuous diverging map (not piecewise): a piecewise visualMap on a
+        // cartesian line throws "reading 'coord'" in echarts 5.x. Symmetric
+        // min/max centres the red→green transition at zero — green above, red below.
         visualMap: {
           show: false,
-          type: 'piecewise',
-          pieces: [
-            { gte: 0,  color: '#97E152' },
-            { lt:  0,  color: '#E5484D' },
-          ],
+          type: 'continuous',
+          dimension: 1,
+          min: -210,
+          max: 210,
+          inRange: { color: ['#E5484D', '#E5484D', '#97E152', '#97E152'] },
         },
         series: [{
           name: 'Enrollment Delta',

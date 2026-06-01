@@ -423,19 +423,21 @@ export const distribution: CorpusEntry[] = [
         xAxis: [
           { type: 'value', gridIndex: 0, scale: true, name: 'Enrollment' },
           { type: 'category', gridIndex: 1, data: ['175–275','275–375','375–475','475–525'], show: false },
+          // Right-margin value axis (grid 2). A series' x and y axes MUST live in
+          // the same grid — the right-margin bar previously used xAxis[0] (grid 0).
+          { type: 'value', gridIndex: 2, show: false },
         ],
         yAxis: [
           { type: 'value', gridIndex: 0, scale: true, name: 'Completion %', min: 60, max: 100 },
           { type: 'value', gridIndex: 1, show: false },
           { type: 'category', gridIndex: 2, data: ['70–75','75–80','80–85','85–90','90+'], show: false },
-          { type: 'value', gridIndex: 2, show: false },
         ],
         series: [
           { name: 'Programs', type: 'scatter', xAxisIndex: 0, yAxisIndex: 0, symbolSize: 12, itemStyle: { color: '#0070F0', opacity: 0.8 },
             data: [[320,82],[410,85],[275,78],[500,88],[380,84],[220,74],[460,89],[340,81],[290,80],[430,87],[190,71],[470,90]] },
           { name: 'X Dist.', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, itemStyle: { color: '#46B1EF', opacity: 0.6, borderRadius: [2,2,0,0] },
             data: [2, 4, 4, 2] },
-          { name: 'Y Dist.', type: 'bar', xAxisIndex: 0, yAxisIndex: 2, itemStyle: { color: '#46B1EF', opacity: 0.6, borderRadius: [0,2,2,0] },
+          { name: 'Y Dist.', type: 'bar', xAxisIndex: 2, yAxisIndex: 2, itemStyle: { color: '#46B1EF', opacity: 0.6, borderRadius: [0,2,2,0] },
             data: [2, 1, 5, 3, 1] },
         ],
       },
